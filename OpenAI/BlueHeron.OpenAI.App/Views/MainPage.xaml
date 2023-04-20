@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="BlueHeron.OpenAI.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://schemas.microsoft.com/dotnet/2021/maui/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:BlueHeron.OpenAI"
+    xmlns:vm="clr-namespace:BlueHeron.OpenAI.ViewModels"
+    Title="{Binding Title}"
+    x:DataType="vm:MainViewModel"
+    mc:Ignorable="d">
+	<ContentPage.Content>
+		<Grid Padding="24,24,24,12">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+			<HorizontalStackLayout Padding="0" Spacing="36" Margin="0,0,0,36" HorizontalOptions="Fill">
+				<Image
+					Source="openai.png"
+					HeightRequest="48"
+					WidthRequest="48" />
+				<Label
+                    FontSize="20"
+					TextColor="Black"
+					FontAttributes="Bold"
+                    VerticalOptions="Center"
+                    SemanticProperties.Description="OpenAI Playground"
+                    SemanticProperties.HeadingLevel="Level1"
+                    Style="{StaticResource MauiLabel}"
+                    Text="OpenAI Playground" />
+			</HorizontalStackLayout>
+			<Label
+				Grid.Row="1"
+                FontSize="16"
+				FontAttributes="Bold"
+                HorizontalOptions="Start"
+				Margin="0,0,0,8"
+                SemanticProperties.Description="Question label"
+                SemanticProperties.HeadingLevel="Level2"
+                Style="{StaticResource MauiLabel}"
+                Text="Question" />
+			<Entry
+                Grid.Row="2"
+                FontSize="14"
+                HorizontalOptions="Fill"
+                Margin="0,0,0,16"
+                Text="{Binding Question, Mode=TwoWay}" />
+			<Label
+                Grid.Row="3"
+                FontSize="16"
+				FontAttributes="Bold"
+                HorizontalOptions="Start"
+                Margin="0,0,0,8"
+                SemanticProperties.Description="Answer label"
+                SemanticProperties.HeadingLevel="Level2"
+                Style="{StaticResource MauiLabel}"
+                Text="Answer" />
+			<ScrollView
+				Grid.Row="4">
+				<Label
+                FontSize="18"
+                HorizontalOptions="Fill"
+                Margin="0,0,0,24"
+                Style="{StaticResource MauiLabel}"
+                Text="{Binding Answer, Mode=OneWay}"
+				LineBreakMode="WordWrap" />
+			</ScrollView>
+			<Button
+                Grid.Row="5"
+                Command="{Binding AnswerQuestionCommand}"
+                HorizontalOptions="Center"
+				VerticalOptions="End"
+                SemanticProperties.Hint="Answer the question"
+                Style="{StaticResource PrimaryAction}"
+                Text="Get answer" />
+		</Grid>
+	</ContentPage.Content>
+</ContentPage>

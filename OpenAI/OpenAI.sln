@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33617.297
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlueHeron.OpenAI.App", "BlueHeron.OpenAI.App\BlueHeron.OpenAI.App.csproj", "{5046FFDD-A46B-4B2A-9B71-BFD43F2E3E1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlueHeron.OpenAI", "BlueHeron.OpenAI\BlueHeron.OpenAI.csproj", "{70BEF524-2FA7-482D-B47B-2108E6BA046B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5046FFDD-A46B-4B2A-9B71-BFD43F2E3E1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5046FFDD-A46B-4B2A-9B71-BFD43F2E3E1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5046FFDD-A46B-4B2A-9B71-BFD43F2E3E1D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{5046FFDD-A46B-4B2A-9B71-BFD43F2E3E1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5046FFDD-A46B-4B2A-9B71-BFD43F2E3E1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5046FFDD-A46B-4B2A-9B71-BFD43F2E3E1D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{70BEF524-2FA7-482D-B47B-2108E6BA046B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70BEF524-2FA7-482D-B47B-2108E6BA046B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70BEF524-2FA7-482D-B47B-2108E6BA046B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70BEF524-2FA7-482D-B47B-2108E6BA046B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F3157911-F4EB-4C2B-8CFB-DD7088FA64A8}
+	EndGlobalSection
+EndGlobal
