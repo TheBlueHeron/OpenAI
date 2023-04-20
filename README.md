@@ -1,1 +1,1 @@
-# OpenAI
+# OpenAI Playground in .NET MAUI
