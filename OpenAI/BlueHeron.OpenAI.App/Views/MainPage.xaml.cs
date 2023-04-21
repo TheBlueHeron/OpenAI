@@ -2,7 +2,7 @@
 
 public partial class MainPage : ContentPage
 {
-    public MainPage(MainViewModel viewModel)
+    public MainPage(ServiceConnectorViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = viewModel;

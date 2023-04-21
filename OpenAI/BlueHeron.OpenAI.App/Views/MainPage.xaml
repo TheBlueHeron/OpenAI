@@ -6,9 +6,9 @@
     xmlns:d="http://schemas.microsoft.com/dotnet/2021/maui/design"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:BlueHeron.OpenAI"
-    xmlns:vm="clr-namespace:BlueHeron.OpenAI.ViewModels"
+    xmlns:vm="clr-namespace:BlueHeron.OpenAI.ViewModels;assembly=BlueHeron.OpenAI"
     Title="{Binding Title}"
-    x:DataType="vm:MainViewModel"
+    x:DataType="vm:ServiceConnectorViewModel"
     mc:Ignorable="d">
 	<ContentPage.Content>
 		<Grid Padding="24,24,24,12">

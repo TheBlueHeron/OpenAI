@@ -31,6 +31,12 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
         <!-- Minimum Target OS Version for Windows Platform -->
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+        <DefaultLanguage>en-US</DefaultLanguage>
+        <PackageCertificateThumbprint>419EC99EA6BEDBFAE75F331D8FC0F34A1D3A5747</PackageCertificateThumbprint>
+        <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+        <Title>OpenAI Playground</Title>
+        <PackageIcon>SmallTile.scale-200.png</PackageIcon>
+        <PackageLicenseExpression> Unlicense</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup>
@@ -47,8 +53,52 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Remove="AppIcon.scale-100.png" />
+        <None Remove="AppIcon.scale-200.png" />
+        <None Remove="AppIcon.scale-400.png" />
+        <None Remove="BadgeLogo.scale-100.png" />
+        <None Remove="BadgeLogo.scale-200.png" />
+        <None Remove="BadgeLogo.scale-400.png" />
         <None Remove="BlueHeron.OpenAI.App.code-workspace" />
         <None Remove="BlueHeron.OpenAI.code-workspace" />
+        <None Remove="LargeTile.scale-100.png" />
+        <None Remove="LargeTile.scale-200.png" />
+        <None Remove="LargeTile.scale-400.png" />
+        <None Remove="MediumTile.scale-100.png" />
+        <None Remove="MediumTile.scale-200.png" />
+        <None Remove="MediumTile.scale-400.png" />
+        <None Remove="PackageLogo.scale-100.png" />
+        <None Remove="PackageLogo.scale-200.png" />
+        <None Remove="PackageLogo.scale-400.png" />
+        <None Remove="SmallTile.scale-100.png" />
+        <None Remove="SmallTile.scale-400.png" />
+        <None Remove="WideTile.scale-100.png" />
+        <None Remove="WideTile.scale-200.png" />
+        <None Remove="WideTile.scale-400.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="AppIcon.scale-100.png" />
+      <Content Include="AppIcon.scale-200.png" />
+      <Content Include="AppIcon.scale-400.png" />
+      <Content Include="BadgeLogo.scale-100.png" />
+      <Content Include="BadgeLogo.scale-200.png" />
+      <Content Include="BadgeLogo.scale-400.png" />
+      <Content Include="LargeTile.scale-100.png" />
+      <Content Include="LargeTile.scale-200.png" />
+      <Content Include="LargeTile.scale-400.png" />
+      <Content Include="MediumTile.scale-100.png" />
+      <Content Include="MediumTile.scale-200.png" />
+      <Content Include="MediumTile.scale-400.png" />
+      <Content Include="PackageLogo.scale-100.png" />
+      <Content Include="PackageLogo.scale-200.png" />
+      <Content Include="PackageLogo.scale-400.png" />
+      <Content Include="SmallTile.scale-100.png" />
+      <Content Include="SmallTile.scale-200.png" />
+      <Content Include="SmallTile.scale-400.png" />
+      <Content Include="WideTile.scale-100.png" />
+      <Content Include="WideTile.scale-200.png" />
+      <Content Include="WideTile.scale-400.png" />
     </ItemGroup>
 
     <ItemGroup>
@@ -63,5 +113,12 @@
 
     <ItemGroup>
       <ProjectReference Include="..\BlueHeron.OpenAI\BlueHeron.OpenAI.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="SmallTile.scale-200.png">
+        <Pack>True</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
     </ItemGroup>
 </Project>

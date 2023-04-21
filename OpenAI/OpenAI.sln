@@ -5,7 +5,7 @@ VisualStudioVersion = 17.6.33617.297
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlueHeron.OpenAI.App", "BlueHeron.OpenAI.App\BlueHeron.OpenAI.App.csproj", "{5046FFDD-A46B-4B2A-9B71-BFD43F2E3E1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlueHeron.OpenAI", "BlueHeron.OpenAI\BlueHeron.OpenAI.csproj", "{70BEF524-2FA7-482D-B47B-2108E6BA046B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlueHeron.OpenAI", "BlueHeron.OpenAI\BlueHeron.OpenAI.csproj", "{70BEF524-2FA7-482D-B47B-2108E6BA046B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
