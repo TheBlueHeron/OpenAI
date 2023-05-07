@@ -25,6 +25,7 @@ public class ServiceConnector
     public const string KEY_ORG = "OPENAI_ORG";
     public const string MSG_ASSISTANT = "You are a helpful assistant.";
 
+    private List<ChatMessage> mMessages;
     private readonly OpenAIService mService;
 
     #endregion
@@ -51,6 +52,7 @@ public class ServiceConnector
             Organization = Environment.GetEnvironmentVariable(KEY_ORG),
             DefaultModelId = Models.Davinci
         });
+        ClearChat();
     }
 
     #endregion
@@ -58,27 +60,30 @@ public class ServiceConnector
     #region Public methods and functions
 
     /// <summary>
-    /// Posts the given question to the chat completion API using the <see cref="Models.ChatGpt3_5Turbo"/> model, and returns the answer as an <see cref="IAsyncEnumerable{string}"/>.
+    /// Posts the given question to the chat completion API using the <see cref="Models.ChatGpt3_5Turbo"/> model, and returns the answer as an <see cref="IAsyncEnumerable{T}"/>.
     /// </summary>
     /// <param name="question">The question to ask</param>
     /// <returns>The generated answer</returns>
     public async IAsyncEnumerable<string> Answer(string question)
     {
+        mMessages.Add(ChatMessage.FromUser(question));
+
         var completionResult = mService.ChatCompletion.CreateCompletionAsStream(new ChatCompletionCreateRequest
         {
-            Messages = new List<ChatMessage>
-            {
-                ChatMessage.FromSystem(MSG_ASSISTANT),
-                ChatMessage.FromUser(question)
-            },
+            Messages = mMessages,
             Model = Models.ChatGpt3_5Turbo
         });
+
+        var response = string.Empty;
 
         await foreach (var completion in completionResult)
         {
             if (completion.Successful)
             {
-                yield return completion.Choices.FirstOrDefault()?.Message.Content;
+                var str = completion.Choices.FirstOrDefault()?.Message.Content;
+                response += str;
+
+                yield return str;
             }
             else
             {
@@ -86,6 +91,15 @@ public class ServiceConnector
                 yield return _UNKNOWN;
             }
         }
+        mMessages.Add(ChatMessage.FromAssistant(response));
+    }
+
+    /// <summary>
+    /// Clears the messages collection.
+    /// </summary>
+    public void ClearChat()
+    {
+        mMessages = new List<ChatMessage>() { ChatMessage.FromSystem(MSG_ASSISTANT) };
     }
 
     #endregion

@@ -49,6 +49,12 @@
 				<Setter Property="TextColor"
                         Value="{StaticResource White}" />
 			</Style>
+			<Style x:Key="SecondaryAction"
+                   TargetType="Button"
+                   BasedOn="{StaticResource PrimaryAction}">
+				<Setter Property="BackgroundColor"
+                        Value="{StaticResource Secondary}" />
+			</Style>
 		</ResourceDictionary>
 	</Application.Resources>
 </Application>

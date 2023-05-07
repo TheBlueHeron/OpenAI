@@ -375,12 +375,6 @@
 		<Setter Property="Shell.TabBarUnselectedColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray200}}" />
 	</Style>
 
-	<Style TargetType="NavigationPage">
-		<Setter Property="BarBackgroundColor" Value="{StaticResource Primary}" />
-		<Setter Property="BarTextColor" Value="{StaticResource White}" />
-		<Setter Property="IconColor" Value="{StaticResource White}" />
-	</Style>
-
 	<Style TargetType="TabbedPage">
 		<Setter Property="BarBackgroundColor" Value="{StaticResource Primary}" />
 		<Setter Property="BarTextColor" Value="{StaticResource White}" />

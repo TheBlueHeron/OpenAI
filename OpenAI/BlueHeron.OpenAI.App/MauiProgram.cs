@@ -26,8 +26,10 @@ public static partial class MauiProgram
                    fonts.AddFont("OpenSans-SemiBold.ttf", "OpenSansSemiBold");
                });
 
-        builder.Services.AddSingleton<ServiceConnectorViewModel>();
-        builder.Services.AddSingleton<MainPage>();
+        builder.Services
+            .AddSingleton<ServiceConnector>()
+            .AddSingleton<ServiceConnectorViewModel>()
+            .AddSingleton<MainPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

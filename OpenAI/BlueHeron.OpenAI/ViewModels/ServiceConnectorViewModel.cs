@@ -10,7 +10,10 @@ public partial class ServiceConnectorViewModel : BaseViewModel
 {
     #region Objects and variables
 
-    private readonly ServiceConnector mConnector = new();
+    private const string _NEWLINE = "\r\n\r\n";
+    private const string _RESPONSESTART = ">  ";
+
+    private readonly ServiceConnector mConnector;
 
     #endregion
 
@@ -35,9 +38,10 @@ public partial class ServiceConnectorViewModel : BaseViewModel
     /// <summary>
     /// Creates a new <see cref="ServiceConnectorViewModel"/>
     /// </summary>
-    public ServiceConnectorViewModel()
+    public ServiceConnectorViewModel(ServiceConnector connector)
     {
-        Title = "OpenAI";
+        mConnector = connector;
+        Title = "Chat";
     }
 
     #endregion
@@ -45,16 +49,37 @@ public partial class ServiceConnectorViewModel : BaseViewModel
     #region Commands
 
     /// <summary>
+    /// Clears the chat and starts a new one.
+    /// </summary>
+    [RelayCommand]
+    private void ClearChat()
+    {
+        Question = string.Empty;
+        Answer = string.Empty;
+        mConnector.ClearChat();
+    }
+
+    /// <summary>
+    /// Clears the question.
+    /// </summary>
+    [RelayCommand]
+    private void ClearQuestion()
+    {
+        Question = string.Empty;
+    }
+
+    /// <summary>
     /// The default 'AnswerQuestion' command that calls <see cref="ServiceConnector.Answer(string)"/> and asynchronously and repeatedly updates the <see cref="Answer"/> property as it is received as a stream of string tokens.
     /// </summary>
     [RelayCommand]
     private async void AnswerQuestion()
     {
-        Answer = string.Empty;
+        Answer += _RESPONSESTART;
         await foreach (var t in mConnector.Answer(Question))
         {
             _ = await UpdateAnswer(t);
         }
+        Answer += _NEWLINE;
     }
 
     #endregion
