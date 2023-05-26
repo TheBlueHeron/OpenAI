@@ -6,33 +6,33 @@
 			xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			xmlns:local="clr-namespace:BlueHeron.OpenAI"
 			xmlns:vm="clr-namespace:BlueHeron.OpenAI.ViewModels;assembly=BlueHeron.OpenAI">
-	<ContentPage Title="{Binding Title}"
+	<ContentPage Title="Chat"
 				 IconImageSource="openai.png"
-				 x:DataType="vm:ServiceConnectorViewModel"
-				 mc:Ignorable="d" Loaded="ContentPage_Loaded">
-		<ContentPage.Content>
-			<Grid Padding="24,24,24,12">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="1,*" />
-					<ColumnDefinition Width="1,*" />
-				</Grid.ColumnDefinitions>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="*" />
-					<RowDefinition Height="Auto" />
-				</Grid.RowDefinitions>
-				<HorizontalStackLayout Grid.ColumnSpan="2"
+				 x:DataType="vm:OpenAIViewModel"
+				 mc:Ignorable="d" Loaded="ChatPageLoaded">
+		<Grid Padding="24,24,24,12"
+			  VerticalOptions="Fill">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="1,*" />
+				<ColumnDefinition Width="1,*" />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+			<HorizontalStackLayout Grid.ColumnSpan="2"
 									   Padding="0" 
 									   Spacing="36" 
 									   Margin="0,0,0,36"
 									   HorizontalOptions="Fill">
-					<Image	Source="openai.png"
+				<Image	Source="openai.png"
 							HeightRequest="48"
 							WidthRequest="48" />
-					<Label FontSize="20"
+				<Label FontSize="20"
 						   TextColor="Black"
 						   FontAttributes="Bold"
 						   VerticalOptions="Center"
@@ -40,8 +40,8 @@
 						   SemanticProperties.HeadingLevel="Level1"
 						   Style="{StaticResource MauiLabel}"
 						   Text="OpenAI Playground" />
-				</HorizontalStackLayout>
-				<Label Grid.Row="1"
+			</HorizontalStackLayout>
+			<Label Grid.Row="1"
 					   Grid.ColumnSpan="2"
 					   FontSize="16"
 					   FontAttributes="Bold"
@@ -51,28 +51,35 @@
 					   SemanticProperties.HeadingLevel="Level2"
 					   Style="{StaticResource MauiLabel}"
 					   Text="Question" />
-				<Grid Grid.Row="2"
+			<Grid Grid.Row="2"
 					  Grid.ColumnSpan="2"
 					  Margin="0,0,0,16"
 					  HorizontalOptions="Fill">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="*" />
-						<ColumnDefinition Width="Auto" />
-					</Grid.ColumnDefinitions>
-					<Entry x:Name="txtQuestion"
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<Entry x:Name="txtQuestion"
 						   FontSize="18"
 						   HorizontalOptions="Fill"
 						   Margin="0,0,8,0"
 						   Text="{Binding Question, Mode=TwoWay}"
 						   Completed="QuestionCompleted"  />
-					<Button Grid.Column="1"
+				<Button Grid.Column="1"
 							Text="X"
 							Command="{Binding ClearQuestionCommand}"
 							HorizontalOptions="End"
 							SemanticProperties.Hint="Clear the current question."
-							Style="{StaticResource SecondaryAction}"/>
-				</Grid>
-				<Label Grid.Row="3"
+							Style="{StaticResource PrimaryAction}"/>
+				<Button Grid.Column="2"
+							Text="L"
+							Command="{Binding ListenCommand}"
+							HorizontalOptions="End"
+							SemanticProperties.Hint="Start listening."
+							Style="{StaticResource PrimaryAction}"/>
+			</Grid>
+			<Label Grid.Row="3"
 					   Grid.ColumnSpan="2"
 					   FontSize="16"
 					   FontAttributes="Bold"
@@ -82,23 +89,26 @@
 					   SemanticProperties.HeadingLevel="Level2"
 					   Style="{StaticResource MauiLabel}"
 					   Text="Answer" />
-				<ScrollView Grid.Row="4"
-							Grid.ColumnSpan="2">
+			<Border Grid.Row="4"
+					Grid.ColumnSpan="2"
+					Margin="0,0,0,12"
+					VerticalOptions="Fill"
+					StrokeThickness="0">
+				<ScrollView>
 					<Label FontSize="14"
-						   HorizontalOptions="Fill"
-						   Margin="0,0,0,12"
-						   Style="{StaticResource MauiLabel}"
-						   Text="{Binding Answer, Mode=OneWay}"
-						   LineBreakMode="WordWrap" />
+					   Style="{StaticResource MauiLabel}"
+					   Text="{Binding Answer, Mode=OneWay}"
+					   LineBreakMode="WordWrap" />
 				</ScrollView>
-				<Button Grid.Row="5"
+			</Border>
+			<Button Grid.Row="5"
 						Command="{Binding AnswerQuestionCommand}"
 						HorizontalOptions="End"
 						VerticalOptions="End"
 						SemanticProperties.Hint="Answer the question"
 						Style="{StaticResource PrimaryAction}"
 						Text="Get answer" />
-				<Button Grid.Row="5"
+			<Button Grid.Row="5"
 						Grid.Column="1"
 						Command="{Binding ClearChatCommand}"
 						HorizontalOptions="Start"
@@ -107,10 +117,12 @@
 						SemanticProperties.Hint="Clear the current chat and start a new one."
 						Style="{StaticResource SecondaryAction}"
 						Text="New chat" />
-			</Grid>
-		</ContentPage.Content>
+		</Grid>
 	</ContentPage>
-	<ContentPage Title="To Do">
+	<ContentPage Title="To Do"
+				 IconImageSource="openai.png"
+				 x:DataType="vm:OpenAIViewModel"
+				 mc:Ignorable="d" Loaded="ToDoPageLoaded">
 		<Grid Padding="24,24,24,12">
 			<Label Text="To Do..." />
 		</Grid>

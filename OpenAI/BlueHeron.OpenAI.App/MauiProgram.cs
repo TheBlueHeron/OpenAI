@@ -27,8 +27,7 @@ public static partial class MauiProgram
                });
 
         builder.Services
-            .AddSingleton<ServiceConnector>()
-            .AddSingleton<ServiceConnectorViewModel>()
+            .UseOpenAI()
             .AddSingleton<MainPage>();
 
 #if DEBUG

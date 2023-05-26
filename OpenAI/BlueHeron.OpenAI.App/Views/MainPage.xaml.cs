@@ -10,8 +10,8 @@ public partial class MainPage : TabbedPage
     /// <summary>
     /// Initializes the main page.
     /// </summary>
-    /// <param name="viewModel">The <see cref="ServiceConnectorViewModel"/> to use</param>
-    public MainPage(ServiceConnectorViewModel viewModel)
+    /// <param name="viewModel">The <see cref="OpenAIViewModel"/> to use</param>
+    public MainPage(OpenAIViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = viewModel;
@@ -24,17 +24,25 @@ public partial class MainPage : TabbedPage
     /// <summary>
     /// Sets focus to the Question <see cref="Entry"/>.
     /// </summary>
-    private void ContentPage_Loaded(object sender, EventArgs e)
+    private void ChatPageLoaded(object sender, EventArgs e)
     {
         txtQuestion.Focus();
     }
 
     /// <summary>
-    /// Executes the <see cref="ServiceConnectorViewModel.AnswerQuestionCommand"/>.
+    /// Executes the <see cref="OpenAIViewModel.AnswerQuestionCommand"/>.
     /// </summary>
     private void QuestionCompleted(object sender, EventArgs e)
     {
-        ((ServiceConnectorViewModel)BindingContext).AnswerQuestionCommand.Execute(null);
+        ((OpenAIViewModel)BindingContext).AnswerQuestionCommand.Execute(null);
+    }
+
+    /// <summary>
+    /// ...
+    /// </summary>
+    private void ToDoPageLoaded(object sender, EventArgs e)
+    {
+        // do stuff
     }
 
     #endregion
