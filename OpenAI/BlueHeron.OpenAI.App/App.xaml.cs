@@ -1,4 +1,6 @@
-﻿namespace BlueHeron.OpenAI;
+﻿using System.Diagnostics;
+
+namespace BlueHeron.OpenAI;
 
 /// <summary>
 /// The app.
@@ -13,6 +15,10 @@ public partial class App : Application
     {
         InitializeComponent();
         MainPage = services.GetService<MainPage>();
+        AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+        {
+            Debug.WriteLine("UnhandledException: " + (e.ExceptionObject as Exception)?.ToString());
+        };
     }
 
     /// <summary>
@@ -25,8 +31,8 @@ public partial class App : Application
         var window = base.CreateWindow(activationState);
         
         window.Title = "BlueHeron OpenAI Playground";
-        window.MinimumWidth = 360;
-        window.MinimumHeight = 400;
+        window.MinimumWidth = 380;
+        window.MinimumHeight = 440;
         window.Width = window.MinimumWidth;
         window.Height = window.MinimumHeight;
 

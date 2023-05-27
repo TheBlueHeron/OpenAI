@@ -1,7 +1,7 @@
-﻿using AVFoundation;
+﻿using System.Globalization;
+using AVFoundation;
 using Foundation;
 using Speech;
-using System.Globalization;
 
 namespace BlueHeron.OpenAI;
 
@@ -11,6 +11,8 @@ public partial class SpeechToTextImplementation : ISpeechToText
     private SFSpeechAudioBufferRecognitionRequest liveSpeechRequest;
     private SFSpeechRecognizer speechRecognizer;
     private SFSpeechRecognitionTask recognitionTask;
+
+    public event EventHandler<StateChangedEventArgs> StateChanged;
 
     public ValueTask DisposeAsync()
     {
@@ -112,6 +114,15 @@ public partial class SpeechToTextImplementation : ISpeechToText
         audioEngine?.Stop();
         liveSpeechRequest?.EndAudio();
         recognitionTask?.Cancel();
+    }
+
+    /// <summary>
+    /// Cleans up resources.
+    /// </summary>
+    public Task<bool> Quit()
+    {
+        speechRecognizer?.Dispose();
+        return Task.FromResult(true);
     }
 
     public Task<bool> RequestPermissions()

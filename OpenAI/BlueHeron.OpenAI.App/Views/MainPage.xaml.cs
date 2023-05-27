@@ -1,4 +1,6 @@
-﻿namespace BlueHeron.OpenAI.Views;
+﻿using System.ComponentModel;
+
+namespace BlueHeron.OpenAI.Views;
 
 /// <summary>
 /// The main application page.
@@ -15,6 +17,18 @@ public partial class MainPage : TabbedPage
     {
         InitializeComponent();
         BindingContext = viewModel;
+        viewModel.PropertyChanged += OnAlertChanged;
+    }
+
+    /// <summary>
+    /// Displays an alert message if needed.
+    /// </summary>
+    private void OnAlertChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (sender is OpenAIViewModel vm && e.PropertyName == nameof(OpenAIViewModel.Alert) && !string.IsNullOrEmpty(vm.Alert))
+        {
+            DisplayAlert("Warning", vm.Alert, "Dismiss", FlowDirection.MatchParent);
+        }
     }
 
     #endregion
@@ -43,6 +57,15 @@ public partial class MainPage : TabbedPage
     private void ToDoPageLoaded(object sender, EventArgs e)
     {
         // do stuff
+    }
+
+    /// <summary>
+    /// Cleans up resources.
+    /// </summary>
+    protected async override void OnDisappearing()
+    {
+        _ = await ((OpenAIViewModel)BindingContext).Quit(); // despite careful disposing an error is generated on close, which is not captured by AppDomain.Current.UnhandledException
+        base.OnDisappearing();
     }
 
     #endregion

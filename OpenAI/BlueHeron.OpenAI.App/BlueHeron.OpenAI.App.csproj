@@ -70,6 +70,7 @@
         <None Remove="PackageLogo.scale-100.png" />
         <None Remove="PackageLogo.scale-200.png" />
         <None Remove="PackageLogo.scale-400.png" />
+        <None Remove="Resources\Fonts\segoe.ttf" />
         <None Remove="SmallTile.scale-100.png" />
         <None Remove="SmallTile.scale-400.png" />
         <None Remove="WideTile.scale-100.png" />

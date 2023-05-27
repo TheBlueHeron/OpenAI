@@ -22,4 +22,14 @@ public interface ISpeechToText
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     /// <returns>The converted speech</returns>
     Task<string> Listen(CultureInfo culture, IProgress<string> recognitionResult, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Cleans up resources.
+    /// </summary>
+    Task<bool> Quit();
+
+    /// <summary>
+    /// Event is raised when the state of the inner speech recognizer has changed.
+    /// </summary>
+    public event EventHandler<StateChangedEventArgs> StateChanged;
 }

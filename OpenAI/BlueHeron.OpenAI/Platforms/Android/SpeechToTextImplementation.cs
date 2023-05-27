@@ -77,9 +77,9 @@ public partial class SpeechToTextImplementation : ISpeechToText
     private SpeechRecognitionListener listener;
     private SpeechRecognizer speechRecognizer;
 
-    public async Task<string> Listen(CultureInfo culture,
-        IProgress<string> recognitionResult,
-        CancellationToken cancellationToken)
+    public event EventHandler<StateChangedEventArgs> StateChanged;
+
+    public async Task<string> Listen(CultureInfo culture, IProgress<string> recognitionResult, CancellationToken cancellationToken)
     {
         var taskResult = new TaskCompletionSource<string>();
         listener = new SpeechRecognitionListener
@@ -133,6 +133,16 @@ public partial class SpeechToTextImplementation : ISpeechToText
         intent.PutExtra(RecognizerIntent.ExtraPartialResults, true);
 
         return intent;
+    }
+
+    /// <summary>
+    /// Cleans up resources.
+    /// </summary>
+    public Task<bool> Quit()
+    {
+        listener?.Dispose();
+        speechRecognizer?.Dispose();
+        return Task.FromResult(true);
     }
 
     public async Task<bool> RequestPermissions()

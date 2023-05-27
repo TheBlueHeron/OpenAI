@@ -18,7 +18,7 @@ public partial class OpenAIViewModel : ObservableObject
 
     private readonly ServiceConnector mConnector;
     private readonly ISpeechToText mSpeech;
-    private readonly CancellationTokenSource mTokenSource;
+    private CancellationTokenSource mTokenSource;
 
     #endregion
 
@@ -43,10 +43,28 @@ public partial class OpenAIViewModel : ObservableObject
     private string _culture = "en-us";
 
     /// <summary>
+    /// Gets a boolean, determining whether the speech recognizer is currently listening.
+    /// </summary>
+    [ObservableProperty()]
+    private bool _isListening = false;
+
+    /// <summary>
+    /// Gets a boolean, determining whether the speech recognizer is ready to start listening.
+    /// </summary>
+    [ObservableProperty()]
+    private bool _isReadyForListen = true;
+
+    /// <summary>
     /// The latest question posted to the <see cref="ServiceConnector"/>.
     /// </summary>
     [ObservableProperty()]
     private string _question = string.Empty;
+
+    /// <summary>
+    /// The current state of the <see cref="ISpeechToText"/> implementation.
+    /// </summary>
+    [ObservableProperty()]
+    private string _state = string.Empty;
 
     #endregion
 
@@ -61,7 +79,19 @@ public partial class OpenAIViewModel : ObservableObject
     {
         mConnector = connector;
         mSpeech = speech;
-        mTokenSource = new CancellationTokenSource();
+        mSpeech.StateChanged += OnStateChanged;
+    }
+
+    #endregion
+
+    #region Public methods and functions
+
+    /// <summary>
+    /// Cleans up resources.
+    /// </summary>
+    public async Task<bool> Quit()
+    {
+        return await mSpeech.Quit();
     }
 
     #endregion
@@ -88,7 +118,7 @@ public partial class OpenAIViewModel : ObservableObject
     [RelayCommand]
     private void ClearChat()
     {
-        Question = string.Empty;
+        ClearQuestion();
         Answer = string.Empty;
         mConnector.ClearChat();
     }
@@ -100,6 +130,7 @@ public partial class OpenAIViewModel : ObservableObject
     private void ClearQuestion()
     {
         Question = string.Empty;
+        ListenCancel();
     }
 
     /// <summary>
@@ -112,6 +143,9 @@ public partial class OpenAIViewModel : ObservableObject
 
         if (isAuthorized)
         {
+            mTokenSource = new CancellationTokenSource();
+            IsListening = true;
+            IsReadyForListen = false;
             try
             {
                 Question = await mSpeech.Listen(CultureInfo.GetCultureInfo(Culture), new Progress<string>(partialText =>
@@ -129,25 +163,44 @@ public partial class OpenAIViewModel : ObservableObject
             catch (Exception ex)
             {
                 Alert = ex.Message;
+                IsListening = false;
+                IsReadyForListen = true;
             }
         }
         else
         {
             Alert = _MIC;
+            IsListening = false;
+            IsReadyForListen = false;
         }
     }
 
     /// <summary>
     /// Stops listening to speech input.
     /// </summary>
-    public void ListenCancel()
+    [RelayCommand]
+    private void ListenCancel()
     {
         mTokenSource?.Cancel();
+        IsListening = false;
+        IsReadyForListen = true;
     }
-    
+
     #endregion
 
     #region Private methods and functions
+
+    /// <summary>
+    /// Updates the UI when the speech recognizer state has changed.
+    /// </summary>
+    /// <param name="sender">The <see cref="ISpeechToText"/> implementation</param>
+    /// <param name="e">The <see cref="StateChangedEventArgs"/></param>
+    private void OnStateChanged(object sender, StateChangedEventArgs e)
+    {
+        IsListening = e.IsListening;
+        IsReadyForListen = e.IsReasyForListen;
+        State = e.State;
+    }
 
     /// <summary>
     /// Asynchronously updates the <see cref="Answer"/> property.

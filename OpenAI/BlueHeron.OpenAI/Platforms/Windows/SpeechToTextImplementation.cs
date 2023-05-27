@@ -13,10 +13,25 @@ namespace BlueHeron.OpenAI;
 /// </summary>
 public partial class SpeechToTextImplementation : ISpeechToText
 {
-    private SpeechRecognitionEngine speechRecognitionEngine;
-    private SpeechRecognizer speechRecognizer;
-    private string recognitionText;
+    #region Objects and variables
 
+    private SpeechRecognitionEngine mSpeechRecognitionEngine;
+    private SpeechRecognizer mSpeechRecognizer;
+    private string mRecognizedText;
+
+    public event EventHandler<StateChangedEventArgs> StateChanged;
+
+    #endregion
+
+    #region Public methods and functions
+
+    /// <summary>
+    /// Starts listening to speech input.
+    /// </summary>
+    /// <param name="culture">The <see cref="CultureInfo"/> to use</param>
+    /// <param name="recognitionResult">The <see cref="IProgress{String}"/> holding the result</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    /// <returns>A string holding the recognized speech as flat text</returns>
     public Task<string> Listen(CultureInfo culture, IProgress<string> recognitionResult, CancellationToken cancellationToken)
     {
         if (Connectivity.NetworkAccess == NetworkAccess.Internet)
@@ -27,62 +42,145 @@ public partial class SpeechToTextImplementation : ISpeechToText
         return ListenOffline(culture, recognitionResult, cancellationToken);
     }
 
+    /// <summary>
+    /// Clans up resources.
+    /// </summary>
+    public async Task<bool> Quit()
+    {
+        if (mSpeechRecognitionEngine != null)
+        {
+            StopOfflineRecording();
+            mSpeechRecognitionEngine.Dispose();
+            mSpeechRecognitionEngine = null;
+        }
+        if (mSpeechRecognizer != null)
+        {
+            await StopRecording();
+            
+            mSpeechRecognizer?.Dispose();
+            mSpeechRecognizer = null;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Returns always <see langword="true"/> (for now).
+    /// </summary>
+    /// <returns>Boolean, <see langword="true"/> if the appropriate permissions were acquired</returns>
+    public Task<bool> RequestPermissions()
+    {
+        return Task.FromResult(true);
+    }
+
+    #endregion
+
+    #region Private methods and functions
+
+    /// <summary>
+    /// Starts listening using online continuous recogition.
+    /// </summary>
+    /// <param name="culture">The <see cref="CultureInfo"/> to use</param>
+    /// <param name="recognitionResult">The <see cref="IProgress{String}"/> holding the result</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    /// <returns>A string holding the recognized speech as flat text</returns>
     private async Task<string> ListenOnline(CultureInfo culture, IProgress<string> recognitionResult, CancellationToken cancellationToken)
     {
-        recognitionText = string.Empty;
-        speechRecognizer = new SpeechRecognizer(new Language(culture.IetfLanguageTag));
-        await speechRecognizer.CompileConstraintsAsync();
-
         var taskResult = new TaskCompletionSource<string>();
-        speechRecognizer.ContinuousRecognitionSession.ResultGenerated += (s, e) =>
+
+        if (mSpeechRecognizer == null)
         {
-            recognitionText += e.Result.Text;
-            recognitionResult?.Report(e.Result.Text);
-        };
-        speechRecognizer.ContinuousRecognitionSession.Completed += (s, e) =>
-        {
-            switch (e.Status)
+            mSpeechRecognizer = new SpeechRecognizer(new Language(culture.IetfLanguageTag));
+            mSpeechRecognizer.Timeouts.BabbleTimeout = new TimeSpan(0, 0, 1);
+            mSpeechRecognizer.Timeouts.EndSilenceTimeout = new TimeSpan(0, 0, 3);
+            mSpeechRecognizer.Timeouts.InitialSilenceTimeout = new TimeSpan(0, 0, 5);
+            mSpeechRecognizer.Constraints.Clear();
+
+            await mSpeechRecognizer.CompileConstraintsAsync();
+
+            mSpeechRecognizer.StateChanged += (s, e) =>
             {
-                case SpeechRecognitionResultStatus.Success:
-                    taskResult.TrySetResult(recognitionText);
-                    break;
-                case SpeechRecognitionResultStatus.UserCanceled:
-                    taskResult.TrySetCanceled();
-                    break;
-                default:
-                    taskResult.TrySetException(new Exception(e.Status.ToString()));
-                    break;
-            }
-        };
-        if (speechRecognizer.State == SpeechRecognizerState.Idle)
-        {
-            await speechRecognizer.ContinuousRecognitionSession.StartAsync();
-            await using (cancellationToken.Register(async () =>
+                var isListening = true;
+                var isReady = true;
+
+                switch (e.State)
+                {
+                    case SpeechRecognizerState.Idle:
+                        isListening = false;
+                        isReady = true;
+                        break;
+                    case SpeechRecognizerState.Capturing:
+                    case SpeechRecognizerState.Processing:
+                    case SpeechRecognizerState.SoundStarted:
+                    case SpeechRecognizerState.SoundEnded:
+                    case SpeechRecognizerState.SpeechDetected:
+                        isListening = true;
+                        isReady = false;
+                        break;
+                    default: // Paused
+                        isListening = false;
+                        isReady = false;
+                        break;
+                }
+                StateChanged?.Invoke(this, new StateChangedEventArgs(isListening, isReady, e.State.ToString()));
+            };
+            mSpeechRecognizer.ContinuousRecognitionSession.ResultGenerated += (s, e) =>
             {
-                await StopRecording();
-                taskResult.TrySetCanceled();
-            }))
+                mRecognizedText += e.Result.Text;
+                recognitionResult?.Report(e.Result.Text);
+            };
+            mSpeechRecognizer.ContinuousRecognitionSession.Completed += async (s, e) =>
             {
-                return await taskResult.Task;
-            }
+                switch (e.Status)
+                {
+                    case SpeechRecognitionResultStatus.Success:
+                        taskResult.TrySetResult(mRecognizedText);
+                        break;
+                    case SpeechRecognitionResultStatus.UserCanceled:
+                        await Quit();
+                        taskResult.TrySetCanceled();
+                        break;
+                    case SpeechRecognitionResultStatus.TimeoutExceeded:
+                        await Quit();
+                        taskResult.TrySetResult(mRecognizedText);
+                        break;
+                    default:
+                        if (mSpeechRecognizer.State != SpeechRecognizerState.Idle)
+                        {
+                            await Quit();
+                            taskResult.TrySetException(new Exception(e.Status.ToString()));
+                        }
+                        break;
+                }
+            };
         }
-        else
+
+        mRecognizedText = string.Empty;
+        mSpeechRecognizer.ContinuousRecognitionSession.AutoStopSilenceTimeout = new TimeSpan(0, 0, 5);
+        await mSpeechRecognizer.ContinuousRecognitionSession.StartAsync();
+        await using (cancellationToken.Register(async () =>
         {
-            taskResult.TrySetCanceled();
+            await Quit();
+            taskResult.TrySetCanceled(cancellationToken);
+        }))
+        {
             return await taskResult.Task;
         }
     }
 
+    /// <summary>
+    /// Starts listening using an offline <see cref="Grammar"/>.
+    /// </summary>
+    /// <param name="culture">The <see cref="CultureInfo"/> to use</param>
+    /// <param name="recognitionResult">The <see cref="IProgress{String}"/> holding the result</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    /// <returns>A string holding the recognized speech as flat text</returns>
     private async Task<string> ListenOffline(CultureInfo culture, IProgress<string> recognitionResult, CancellationToken cancellationToken)
     {
-        speechRecognitionEngine = new SpeechRecognitionEngine(culture);
-        speechRecognitionEngine.LoadGrammarAsync(new DictationGrammar());
-        speechRecognitionEngine.SpeechRecognized += (s, e) =>
-        {
-            recognitionResult?.Report(e.Result.Text);
-        };
-        speechRecognitionEngine.SetInputToDefaultAudioDevice();
-        speechRecognitionEngine.RecognizeAsync(RecognizeMode.Multiple);
+        mSpeechRecognitionEngine = new SpeechRecognitionEngine(culture);
+        mSpeechRecognitionEngine.LoadGrammarAsync(new DictationGrammar());
+        mSpeechRecognitionEngine.SpeechRecognized += (s, e) => recognitionResult?.Report(e.Result.Text);
+        mSpeechRecognitionEngine.SetInputToDefaultAudioDevice();
+        mSpeechRecognitionEngine.RecognizeAsync(RecognizeMode.Multiple);
         var taskResult = new TaskCompletionSource<string>();
         await using (cancellationToken.Register(() =>
         {
@@ -94,11 +192,17 @@ public partial class SpeechToTextImplementation : ISpeechToText
         }
     }
 
+    /// <summary>
+    /// Stops the continuous listening.
+    /// </summary>
     private async Task StopRecording()
     {
         try
         {
-            await speechRecognizer?.ContinuousRecognitionSession.StopAsync();
+            if (mSpeechRecognizer != null && mSpeechRecognizer.State != SpeechRecognizerState.Idle)
+            {
+                await mSpeechRecognizer.ContinuousRecognitionSession?.StopAsync();
+            }
         }
         catch
         {
@@ -106,21 +210,13 @@ public partial class SpeechToTextImplementation : ISpeechToText
         }
     }
 
+    /// <summary>
+    /// Stops listening.
+    /// </summary>
     private void StopOfflineRecording()
     {
-        speechRecognitionEngine?.RecognizeAsyncCancel();
+        mSpeechRecognitionEngine?.RecognizeAsyncCancel();
     }
 
-    public async ValueTask DisposeAsync()
-    {
-        await StopRecording();
-        StopOfflineRecording();
-        speechRecognitionEngine?.Dispose();
-        speechRecognizer?.Dispose();
-    }
-
-    public Task<bool> RequestPermissions()
-    {
-        return Task.FromResult(true);
-    }
+    #endregion
 }

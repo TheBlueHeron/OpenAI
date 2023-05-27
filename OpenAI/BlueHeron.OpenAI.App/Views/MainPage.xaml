@@ -15,108 +15,145 @@
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="1,*" />
 				<ColumnDefinition Width="1,*" />
+				<ColumnDefinition Width="1,*" />
 			</Grid.ColumnDefinitions>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
+				<RowDefinition Height="48" />
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
 				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
-			<HorizontalStackLayout Grid.ColumnSpan="2"
-									   Padding="0" 
-									   Spacing="36" 
-									   Margin="0,0,0,36"
-									   HorizontalOptions="Fill">
-				<Image	Source="openai.png"
-							HeightRequest="48"
-							WidthRequest="48" />
+			<HorizontalStackLayout Grid.ColumnSpan="3"
+								   Padding="0" 
+								   Spacing="36" 
+								   Margin="0,0,0,36"
+								   HorizontalOptions="Fill">
+				<Image Source="openai.png"
+					   HeightRequest="48"
+					   WidthRequest="48" />
 				<Label FontSize="20"
-						   TextColor="Black"
-						   FontAttributes="Bold"
-						   VerticalOptions="Center"
-						   SemanticProperties.Description="OpenAI Playground"
-						   SemanticProperties.HeadingLevel="Level1"
-						   Style="{StaticResource MauiLabel}"
-						   Text="OpenAI Playground" />
+					   TextColor="Black"
+					   FontAttributes="Bold"
+					   VerticalOptions="Center"
+					   SemanticProperties.Description="OpenAI Playground"
+					   SemanticProperties.HeadingLevel="Level1"
+					   Style="{StaticResource MauiLabel}"
+					   Text="OpenAI Playground" />
 			</HorizontalStackLayout>
 			<Label Grid.Row="1"
-					   Grid.ColumnSpan="2"
-					   FontSize="16"
-					   FontAttributes="Bold"
-					   HorizontalOptions="Start"
-					   Margin="0,0,0,8"
-					   SemanticProperties.Description="Question label"
-					   SemanticProperties.HeadingLevel="Level2"
-					   Style="{StaticResource MauiLabel}"
-					   Text="Question" />
+				   Grid.ColumnSpan="3"
+				   FontSize="16"
+				   FontAttributes="Bold"
+				   HorizontalOptions="Start"
+				   Margin="0,0,0,8"
+				   SemanticProperties.Description="Question label"
+				   SemanticProperties.HeadingLevel="Level2"
+				   Style="{StaticResource MauiLabel}"
+				   Text="Question" />
 			<Grid Grid.Row="2"
-					  Grid.ColumnSpan="2"
-					  Margin="0,0,0,16"
-					  HorizontalOptions="Fill">
+				  Grid.ColumnSpan="3"
+				  Margin="0,0,0,16"
+				  HorizontalOptions="Fill">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="Auto" />
 					<ColumnDefinition Width="Auto" />
 				</Grid.ColumnDefinitions>
 				<Entry x:Name="txtQuestion"
-						   FontSize="18"
-						   HorizontalOptions="Fill"
-						   Margin="0,0,8,0"
-						   Text="{Binding Question, Mode=TwoWay}"
-						   Completed="QuestionCompleted"  />
+					   FontSize="15"
+					   HorizontalOptions="Fill"
+					   Margin="0,0,8,0"
+					   Text="{Binding Question, Mode=TwoWay}"
+					   Completed="QuestionCompleted"  />
 				<Button Grid.Column="1"
-							Text="X"
-							Command="{Binding ClearQuestionCommand}"
-							HorizontalOptions="End"
-							SemanticProperties.Hint="Clear the current question."
-							Style="{StaticResource PrimaryAction}"/>
+						Command="{Binding ClearQuestionCommand}"
+						SemanticProperties.Hint="Clear the current question."
+						Style="{StaticResource SecondaryAction}"
+						Padding="10,0,0,0">
+					<Button.ImageSource>
+						<FontImageSource FontFamily="Segoe MDL2 Assets"
+										 Size="16"
+										 Color="White"
+										 Glyph="&#xE74D;" />
+					</Button.ImageSource>
+				</Button>
 				<Button Grid.Column="2"
-							Text="L"
-							Command="{Binding ListenCommand}"
-							HorizontalOptions="End"
-							SemanticProperties.Hint="Start listening."
-							Style="{StaticResource PrimaryAction}"/>
+						Command="{Binding ListenCommand}"
+						SemanticProperties.Hint="Start listening."
+						Style="{StaticResource PrimaryAction}"
+						IsVisible="{Binding IsReadyForListen, Mode=OneWay}"
+						Padding="10,0,0,0">
+					<Button.ImageSource>
+						<FontImageSource FontFamily="Segoe MDL2 Assets"
+										 Size="16"
+										 Color="White"
+										 Glyph="&#xE720;" />
+					</Button.ImageSource>
+				</Button>
+				<Button Grid.Column="2"
+						Command="{Binding ListenCancelCommand}"
+						SemanticProperties.Hint="Stop listening."
+						Style="{StaticResource PrimaryAction}"
+						IsVisible="{Binding IsListening, Mode=OneWay}"
+						Padding="10,0,0,0">
+					<Button.ImageSource>
+						<FontImageSource FontFamily="Segoe MDL2 Assets"
+										 Size="16"
+										 Color="White"
+										 Glyph="&#xE75C;" />
+					</Button.ImageSource>
+				</Button>
 			</Grid>
 			<Label Grid.Row="3"
-					   Grid.ColumnSpan="2"
-					   FontSize="16"
-					   FontAttributes="Bold"
-					   HorizontalOptions="Start"
-					   Margin="0,0,0,8"
-					   SemanticProperties.Description="Answer label"
-					   SemanticProperties.HeadingLevel="Level2"
-					   Style="{StaticResource MauiLabel}"
-					   Text="Answer" />
+				   Grid.ColumnSpan="3"
+				   FontSize="16"
+				   FontAttributes="Bold"
+				   HorizontalOptions="Start"
+				   Margin="0,0,0,8"
+				   SemanticProperties.Description="Answer label"
+				   SemanticProperties.HeadingLevel="Level2"
+				   Style="{StaticResource MauiLabel}"
+				   Text="Answer" />
 			<Border Grid.Row="4"
-					Grid.ColumnSpan="2"
+					Grid.ColumnSpan="3"
 					Margin="0,0,0,12"
 					VerticalOptions="Fill"
 					StrokeThickness="0">
 				<ScrollView>
 					<Label FontSize="14"
-					   Style="{StaticResource MauiLabel}"
-					   Text="{Binding Answer, Mode=OneWay}"
-					   LineBreakMode="WordWrap" />
+						   Style="{StaticResource MauiLabel}"
+						   Text="{Binding Answer, Mode=OneWay}"
+						   LineBreakMode="WordWrap" />
 				</ScrollView>
 			</Border>
 			<Button Grid.Row="5"
-						Command="{Binding AnswerQuestionCommand}"
-						HorizontalOptions="End"
-						VerticalOptions="End"
-						SemanticProperties.Hint="Answer the question"
-						Style="{StaticResource PrimaryAction}"
-						Text="Get answer" />
+					Command="{Binding AnswerQuestionCommand}"
+					HorizontalOptions="End"
+					VerticalOptions="End"
+					SemanticProperties.Hint="Answer the question"
+					Style="{StaticResource PrimaryAction}"
+					Text="Get answer" />
+			<Label FontSize="12"
+				   Grid.Row="5"
+				   Grid.Column="1"
+				   TextColor="Gray"
+				   HorizontalOptions="Center"
+				   VerticalOptions="Center"
+				   SemanticProperties.Description="Speech status"
+				   SemanticProperties.HeadingLevel="Level2"
+				   Style="{StaticResource MauiLabel}"
+				   Text="{Binding State, Mode=OneWay}" />
 			<Button Grid.Row="5"
-						Grid.Column="1"
-						Command="{Binding ClearChatCommand}"
-						HorizontalOptions="Start"
-						Margin="8,0,0,0"
-						VerticalOptions="End"
-						SemanticProperties.Hint="Clear the current chat and start a new one."
-						Style="{StaticResource SecondaryAction}"
-						Text="New chat" />
+					Grid.Column="2"
+					Command="{Binding ClearChatCommand}"
+					HorizontalOptions="Start"
+					Margin="8,0,0,0"
+					VerticalOptions="End"
+					SemanticProperties.Hint="Clear the current chat and start a new one."
+					Style="{StaticResource SecondaryAction}"
+					Text="New chat" />
 		</Grid>
 	</ContentPage>
 	<ContentPage Title="To Do"

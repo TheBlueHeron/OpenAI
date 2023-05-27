@@ -12,6 +12,8 @@ public partial class SpeechToTextImplementation : ISpeechToText
     private SFSpeechRecognizer speechRecognizer;
     private SFSpeechRecognitionTask recognitionTask;
 
+    public event EventHandler<StateChangedEventArgs> StateChanged;
+
     public async Task<string> Listen(CultureInfo culture, IProgress<string> recognitionResult, CancellationToken cancellationToken)
     {
         speechRecognizer = new SFSpeechRecognizer(NSLocale.FromLocaleIdentifier(culture.Name));
@@ -96,13 +98,16 @@ public partial class SpeechToTextImplementation : ISpeechToText
         recognitionTask?.Cancel();
     }
 
-    public ValueTask DisposeAsync()
+    /// <summary>
+    /// Cleans up resources.
+    /// </summary>
+    public Task<bool> Quit()
     {
         audioEngine?.Dispose();
         speechRecognizer?.Dispose();
         liveSpeechRequest?.Dispose();
         recognitionTask?.Dispose();
-        return ValueTask.CompletedTask;
+        return Task.FromResult(true);
     }
 
     public Task<bool> RequestPermissions()

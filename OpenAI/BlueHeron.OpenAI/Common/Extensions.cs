@@ -1,4 +1,6 @@
-﻿using BlueHeron.OpenAI.ViewModels;
+﻿using System.ComponentModel;
+using System.Reflection;
+using BlueHeron.OpenAI.ViewModels;
 
 namespace BlueHeron.OpenAI;
 
@@ -10,10 +12,14 @@ public static class Extensions
     /// <summary>
     /// Registers services needed to use BlueHeron.OpenAI.
     /// </summary>
-    /// <param name="services">This <see cref="IServiceCollection"/></param>
-    /// <returns>This <see cref="IServiceCollection"/></returns>
-    public static IServiceCollection UseOpenAI(this IServiceCollection services) =>
-        services.AddSingleton<ServiceConnector>()
+    /// <param name="builder">This <see cref="MauiAppBuilder"/></param>
+    /// <returns>This <see cref="MauiAppBuilder"/></returns>
+    public static MauiAppBuilder UseOpenAI(this MauiAppBuilder builder)
+    {
+        builder.Services.AddSingleton<ServiceConnector>()
         .AddSingleton(typeof(ISpeechToText), new SpeechToTextImplementation())
         .AddSingleton<OpenAIViewModel>();
+        return builder;
+    }
+
 }

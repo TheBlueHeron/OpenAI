@@ -20,20 +20,19 @@ public static partial class MauiProgram
                .UseMauiCommunityToolkit()
                .UseMauiCommunityToolkitMarkup()
                .UseMauiCommunityToolkitMediaElement()
+               .UseOpenAI()
                .ConfigureFonts(fonts =>
                {
                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                    fonts.AddFont("OpenSans-SemiBold.ttf", "OpenSansSemiBold");
+                   fonts.AddFont("Segoe.ttf", "Segoe MDL2 Assets");
                });
 
-        builder.Services
-            .UseOpenAI()
-            .AddSingleton<MainPage>();
+        builder.Services.AddSingleton<MainPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
-
         return builder.Build();
     }
 }
