@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Speech.Synthesis;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -213,6 +214,11 @@ public partial class OpenAIViewModel : ObservableObject
         {
             Answer += t;
         });
+        if (!string.IsNullOrEmpty(t))
+        {
+            await TextToSpeech.SpeakAsync(t);
+        }
+
         return true;
     }
 
