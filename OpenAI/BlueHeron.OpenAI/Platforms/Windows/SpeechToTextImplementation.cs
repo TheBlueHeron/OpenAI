@@ -6,10 +6,15 @@ using SpeechRecognizer = Windows.Media.SpeechRecognition.SpeechRecognizer;
 
 namespace BlueHeron.OpenAI;
 
+// https://learn.microsoft.com/en-us/dotnet/api/system.speech.synthesis.speechsynthesizer.speakasync?view=netframework-4.8.1
+// https://learn.microsoft.com/en-us/previous-versions/office/developer/speech-technologies/hh361616(v%3doffice.14)
+// https://learn.microsoft.com/en-us/previous-versions/office/developer/speech-technologies/jj572475(v=office.14)
+// https://learn.microsoft.com/en-us/archive/msdn-magazine/2019/june/speech-text-to-speech-synthesis-in-net
+
 /// <summary>
 /// System speech recognition must be enabled: https://support.unity.com/hc/en-us/articles/212792423-Why-I-am-getting-a-StartAsync-error-running-my-app-that-uses-Windows-Speech-
 /// Also: the application needs the following capabilities: runFullTrust, internetClient and microphone.
-/// 
+/// Text to Speech: Android needs platform setup detailed here: https://learn.microsoft.com/en-us/dotnet/maui/platform-integration/device-media/text-to-speech?tabs=android.
 /// </summary>
 public partial class SpeechToTextImplementation : ISpeechToText
 {

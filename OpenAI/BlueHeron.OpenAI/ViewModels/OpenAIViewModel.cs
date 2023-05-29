@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using System.Speech.Synthesis;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -62,6 +61,12 @@ public partial class OpenAIViewModel : ObservableObject
     private string _question = string.Empty;
 
     /// <summary>
+    /// The latest answer received from the <see cref="ServiceConnector"/>, separated into sentences.
+    /// </summary>
+    [ObservableProperty()]
+    private List<string> _sentences;
+
+    /// <summary>
     /// The current state of the <see cref="ISpeechToText"/> implementation.
     /// </summary>
     [ObservableProperty()]
@@ -105,10 +110,27 @@ public partial class OpenAIViewModel : ObservableObject
     [RelayCommand]
     private async void AnswerQuestion()
     {
+        var currentSentence = string.Empty;
+
         Answer += _RESPONSESTART;
+        Sentences = new List<string>();
+
         await foreach (var t in mConnector.Answer(Question))
         {
-            _ = await UpdateAnswer(t);
+            if (!string.IsNullOrEmpty(t))
+            {
+                _ = await UpdateAnswer(t);
+                currentSentence += t;
+                if (t == ".")
+                {
+                    SpeakSentence(currentSentence);
+                    currentSentence = string.Empty;
+                }
+            }
+        }
+        if (!string.IsNullOrEmpty(currentSentence)) // no trailing dot
+        {
+            SpeakSentence(currentSentence);
         }
         Answer += _NEWLINE;
     }
@@ -204,6 +226,19 @@ public partial class OpenAIViewModel : ObservableObject
     }
 
     /// <summary>
+    /// Asynchronously speaks the given sentence.
+    /// </summary>
+    /// <param name="sentence">The sentence to speak</param>
+    private void SpeakSentence(string sentence)
+    {
+        Task.Run(async () =>
+        {
+            Sentences.Add(sentence);
+            await TextToSpeech.Default.SpeakAsync(sentence);
+        });
+    }
+
+    /// <summary>
     /// Asynchronously updates the <see cref="Answer"/> property.
     /// </summary>
     /// <param name="t">The next token</param>
@@ -213,12 +248,8 @@ public partial class OpenAIViewModel : ObservableObject
         await Task.Run(() =>
         {
             Answer += t;
+            Thread.Sleep(10);
         });
-        if (!string.IsNullOrEmpty(t))
-        {
-            await TextToSpeech.SpeakAsync(t);
-        }
-
         return true;
     }
 
