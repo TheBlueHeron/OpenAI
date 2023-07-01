@@ -1,18 +1,16 @@
 ﻿using System.Diagnostics;
-using OpenAI.GPT3;
-using OpenAI.GPT3.Managers;
-using OpenAI.GPT3.ObjectModels;
-using OpenAI.GPT3.ObjectModels.RequestModels;
+using BlueHeron.OpenAI.Models;
+using OpenAI;
+using OpenAI.Chat;
+using OpenAI.Models;
 
 namespace BlueHeron.OpenAI;
 
 /// <summary>
-/// Handles the connection to an <see cref="OpenAIService"/>.
+/// Handles the connection to an <see cref="OpenAIClient"/>.
 /// The <see cref="ServiceConnector"/> expects two environment variables to be present on the local machine:
 /// 'OPENAI_KEY': must hold a valid OpenAI API key. See: https://platform.openai.com/account/api-keys
 /// 'OPENAI_ORG': must hold a registered organisation id. See: https://platform.openai.com/account/org-settings
-/// 
-/// Default model: 'DaVinci'.
 /// </summary>
 public class ServiceConnector
 {
@@ -23,19 +21,17 @@ public class ServiceConnector
 
     public const string KEY_API = "OPENAI_KEY";
     public const string KEY_ORG = "OPENAI_ORG";
-    public const string MSG_ASSISTANT = "You are a helpful assistant.";
 
-    private List<ChatMessage> mMessages;
-    private readonly OpenAIService mService;
+    private readonly OpenAIClient mClient;
 
     #endregion
 
     #region Properties
 
     /// <summary>
-    /// The Betalgo <see cref="OpenAIService"/> to use for connecting to OpenAI.
+    /// The <see cref="OpenAIClient"/> to use for connecting to OpenAI.
     /// </summary>
-    public OpenAIService Service => mService;
+    public OpenAIClient Client => mClient;
 
     #endregion
 
@@ -44,15 +40,12 @@ public class ServiceConnector
     /// <summary>
     /// Creates a new <see cref="ServiceConnector"/>.
     /// </summary>
-    public ServiceConnector()
+    public ServiceConnector() // TODO: REMOVE VALUES!!!
     {
-        mService = new OpenAIService(new OpenAiOptions()
-        {
-            ApiKey = Environment.GetEnvironmentVariable(KEY_API),
-            Organization = Environment.GetEnvironmentVariable(KEY_ORG),
-            DefaultModelId = Models.Davinci
-        });
-        ClearChat();
+        mClient = new OpenAIClient(new OpenAIAuthentication( 
+            "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", // Environment.GetEnvironmentVariable(KEY_API),
+            "org-Ssz4keu7TIM75Edx4JnRQdo5" // Environment.GetEnvironmentVariable(KEY_ORG)
+        ));
     }
 
     #endregion
@@ -60,46 +53,30 @@ public class ServiceConnector
     #region Public methods and functions
 
     /// <summary>
-    /// Posts the given question to the chat completion API using the <see cref="Models.ChatGpt3_5Turbo"/> model, and returns the answer as an <see cref="IAsyncEnumerable{T}"/>.
+    /// Posts the given question to the chat completion API using the <see cref="Model.GPT3_5_Turbo"/> model, and returns the answer as an <see cref="IAsyncEnumerable{T}"/>.
     /// </summary>
-    /// <param name="question">The question to ask</param>
+    /// <param name="chat">The updated <see cref="Chat"/></param>
     /// <returns>The generated answer</returns>
-    public async IAsyncEnumerable<string> Answer(string question)
+    public async IAsyncEnumerable<string> Update(Chat chat)
     {
-        mMessages.Add(ChatMessage.FromUser(question));
+        var messages = chat.AsOpenAIChat();
+        var chatRequest = new ChatRequest(messages);
 
-        var completionResult = mService.ChatCompletion.CreateCompletionAsStream(new ChatCompletionCreateRequest
+        await foreach (var result in mClient.ChatEndpoint.StreamCompletionEnumerableAsync(chatRequest))
         {
-            Messages = mMessages,
-            Model = Models.ChatGpt3_5Turbo
-        });
-
-        var response = string.Empty;
-
-        await foreach (var completion in completionResult)
-        {
-            if (completion.Successful)
+            foreach (var choice in result.Choices.Where(choice => !string.IsNullOrWhiteSpace(choice.Delta?.Content)))
             {
-                var str = completion.Choices.FirstOrDefault()?.Message.Content;
-                response += str;
-
-                yield return str;
-            }
-            else
-            {
-                Debug.WriteLine(completion.Error == null ? _ERRUNKNOWN : $" *** {completion.Error.Code}: {completion.Error.Message} *** ");
-                yield return _UNKNOWN;
+                if (choice.FinishReason == null)
+                {
+                    yield return choice.Delta.Content;
+                }
+                else
+                {
+                    Debug.WriteLine(choice.FinishReason);
+                    yield return _UNKNOWN;
+                }
             }
         }
-        mMessages.Add(ChatMessage.FromAssistant(response));
-    }
-
-    /// <summary>
-    /// Clears the messages collection.
-    /// </summary>
-    public void ClearChat()
-    {
-        mMessages = new List<ChatMessage>() { ChatMessage.FromSystem(MSG_ASSISTANT) };
     }
 
     #endregion

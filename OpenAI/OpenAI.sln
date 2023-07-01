@@ -7,6 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlueHeron.OpenAI.App", "Blu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlueHeron.OpenAI", "BlueHeron.OpenAI\BlueHeron.OpenAI.csproj", "{70BEF524-2FA7-482D-B47B-2108E6BA046B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Specs", "Specs", "{64C5815A-189A-4C7D-9D77-AFD20791B563}"
+	ProjectSection(SolutionItems) = preProject
+		OpenAI_Playground_Specs.pptx = OpenAI_Playground_Specs.pptx
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenAI-DotNet", "..\OpenAI-DotNet\OpenAI-DotNet\OpenAI-DotNet\OpenAI-DotNet.csproj", "{6B0D7810-7EBA-4223-A981-5386BEC9432A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +30,10 @@ Global
 		{70BEF524-2FA7-482D-B47B-2108E6BA046B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70BEF524-2FA7-482D-B47B-2108E6BA046B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70BEF524-2FA7-482D-B47B-2108E6BA046B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B0D7810-7EBA-4223-A981-5386BEC9432A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B0D7810-7EBA-4223-A981-5386BEC9432A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B0D7810-7EBA-4223-A981-5386BEC9432A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B0D7810-7EBA-4223-A981-5386BEC9432A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -7,6 +7,12 @@ namespace BlueHeron.OpenAI.Views;
 /// </summary>
 public partial class MainPage : TabbedPage
 {
+    #region Objects and variables
+
+    private readonly OpenAIViewModel mViewModel;
+
+    #endregion
+
     #region Construction
 
     /// <summary>
@@ -16,8 +22,9 @@ public partial class MainPage : TabbedPage
     public MainPage(OpenAIViewModel viewModel)
     {
         InitializeComponent();
-        BindingContext = viewModel;
-        viewModel.PropertyChanged += OnAlertChanged;
+        mViewModel = viewModel;
+        BindingContext = mViewModel;
+        mViewModel.PropertyChanged += OnAlertChanged;
     }
 
     /// <summary>
@@ -48,7 +55,7 @@ public partial class MainPage : TabbedPage
     /// </summary>
     private void QuestionCompleted(object sender, EventArgs e)
     {
-        ((OpenAIViewModel)BindingContext).AnswerQuestionCommand.Execute(null);
+        mViewModel.AnswerQuestionCommand.Execute(null);
     }
 
     /// <summary>
@@ -64,7 +71,7 @@ public partial class MainPage : TabbedPage
     /// </summary>
     protected async override void OnDisappearing()
     {
-        _ = await ((OpenAIViewModel)BindingContext).Quit(); // despite careful disposing an error is generated on close, which is not captured by AppDomain.Current.UnhandledException
+        _ = await mViewModel.Quit(); // despite careful disposing an error is generated on close, which is not captured by AppDomain.Current.UnhandledException
         base.OnDisappearing();
     }
 

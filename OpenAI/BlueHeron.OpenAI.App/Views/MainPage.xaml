@@ -7,7 +7,7 @@
 			xmlns:local="clr-namespace:BlueHeron.OpenAI"
 			xmlns:vm="clr-namespace:BlueHeron.OpenAI.ViewModels;assembly=BlueHeron.OpenAI">
 	<ContentPage Title="Chat"
-				 IconImageSource="openai.png"
+				 IconImageSource="chat.png"
 				 x:DataType="vm:OpenAIViewModel"
 				 mc:Ignorable="d" Loaded="ChatPageLoaded">
 		<Grid Padding="24,24,24,12"
@@ -20,7 +20,7 @@
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
-				<RowDefinition Height="48" />
+				<RowDefinition Height="64" />
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
 				<RowDefinition Height="Auto" />
@@ -63,15 +63,17 @@
 				</Grid.ColumnDefinitions>
 				<Entry x:Name="txtQuestion"
 					   FontSize="15"
+					   HeightRequest="36"
 					   HorizontalOptions="Fill"
 					   Margin="0,0,8,0"
 					   Text="{Binding Question, Mode=TwoWay}"
 					   Completed="QuestionCompleted"  />
 				<Button Grid.Column="1"
 						Command="{Binding ClearQuestionCommand}"
+						HorizontalOptions="Center"
+						VerticalOptions="Center"
 						SemanticProperties.Hint="Clear the current question."
-						Style="{StaticResource SecondaryAction}"
-						Padding="10,0,0,0">
+						Style="{StaticResource SecondaryAction}">
 					<Button.ImageSource>
 						<FontImageSource FontFamily="Segoe MDL2 Assets"
 										 Size="16"
@@ -81,10 +83,11 @@
 				</Button>
 				<Button Grid.Column="2"
 						Command="{Binding ListenCommand}"
+						HorizontalOptions="Center"
+						VerticalOptions="Center"
 						SemanticProperties.Hint="Start listening."
 						Style="{StaticResource PrimaryAction}"
-						IsVisible="{Binding IsReadyForListen, Mode=OneWay}"
-						Padding="10,0,0,0">
+						IsVisible="{Binding IsReadyForListen, Mode=OneWay}">
 					<Button.ImageSource>
 						<FontImageSource FontFamily="Segoe MDL2 Assets"
 										 Size="16"
@@ -157,10 +160,11 @@
 		</Grid>
 	</ContentPage>
 	<ContentPage Title="To Do"
-				 IconImageSource="openai.png"
+				 IconImageSource="db.png"
 				 x:DataType="vm:OpenAIViewModel"
 				 mc:Ignorable="d" Loaded="ToDoPageLoaded">
-		<Grid Padding="24,24,24,12">
+		<Grid Padding="24,24,24,12"
+			  VerticalOptions="Fill">
 			<Label Text="To Do..." />
 		</Grid>
 	</ContentPage>

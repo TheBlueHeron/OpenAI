@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using System.Reflection;
-using BlueHeron.OpenAI.ViewModels;
+﻿using BlueHeron.OpenAI.ViewModels;
 
 namespace BlueHeron.OpenAI;
 
@@ -21,5 +19,4 @@ public static class Extensions
         .AddSingleton<OpenAIViewModel>();
         return builder;
     }
-
 }
