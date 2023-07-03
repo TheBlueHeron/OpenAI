@@ -1,7 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFrameworks>net8.0;net8.0-ios;net8.0-android;net8.0-maccatalyst;net8.0-windows10.0.19041.0</TargetFrameworks>
 		<UseMaui>true</UseMaui>
+		<SkipValidateMauiImplicitPackageReferences>true</SkipValidateMauiImplicitPackageReferences>
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<!-- Target Platform Options -->
@@ -14,9 +15,9 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
-		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
-		<PackageReference Include="System.Speech" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.25387-preview" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0-preview.5.23280.8" />
+		<PackageReference Include="System.Speech" Version="8.0.0-preview.5.23280.8" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\..\OpenAI-DotNet\OpenAI-DotNet\OpenAI-DotNet\OpenAI-DotNet.csproj" />

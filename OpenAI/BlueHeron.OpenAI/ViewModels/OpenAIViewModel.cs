@@ -40,7 +40,7 @@ public partial class OpenAIViewModel : ObservableObject
     /// The latest answer received from the <see cref="ServiceConnector"/>.
     /// </summary>
     [ObservableProperty()]
-    private string _answer = string.Empty;
+    private ChatMessage _answer;
 
     /// <summary>
     /// Gets the <see cref="ChatCollection"/>.
@@ -64,7 +64,7 @@ public partial class OpenAIViewModel : ObservableObject
     /// Gets a boolean, determining whether the speech recognizer is ready to start listening.
     /// </summary>
     [ObservableProperty()]
-    private bool _isReadyForListen = true;
+    private bool _isReadyToListen = true;
 
     /// <summary>
     /// The latest question posted to the <see cref="ServiceConnector"/>.
@@ -97,7 +97,7 @@ public partial class OpenAIViewModel : ObservableObject
     {
         mChats = new()
         {
-            new Chat() { IsActive = true, Title = "New chat" }
+            new Chat() { IsActive = true, Title = Chat.DefaultName() }
         };
         ActiveChat = mChats.First();
         mConnector = connector;
@@ -114,7 +114,8 @@ public partial class OpenAIViewModel : ObservableObject
     /// </summary>
     public async Task<bool> Quit()
     {
-        return await mSpeech.Quit();
+        mTokenSource?.Dispose();
+        return mSpeech is null || await mSpeech.Quit();
     }
 
     #endregion
@@ -130,9 +131,17 @@ public partial class OpenAIViewModel : ObservableObject
         var currentSentence = string.Empty;
 
         Sentences = new List<string>();
+        if (ActiveChat.ChatMessages.Count == 0)
+        {
+            ActiveChat.ChatMessages.Add(new ChatMessage(ChatMessage.MSG_ASSISTANT, MessageType.System, DateTime.UtcNow, false));
+        }
         ActiveChat.ChatMessages.Add(new ChatMessage(Question, MessageType.Question, DateTime.UtcNow, false));
+        ClearQuestion();
 
-        await foreach (var t in mConnector.Update(ActiveChat))
+        var response = mConnector.Update(ActiveChat);
+        Answer = new ChatMessage(string.Empty, MessageType.Answer, DateTime.UtcNow, false);
+        ActiveChat.ChatMessages.Add(Answer);
+        await foreach (var t in response)
         {
             if (!string.IsNullOrEmpty(t))
             {
@@ -151,6 +160,7 @@ public partial class OpenAIViewModel : ObservableObject
             Sentences.Add(currentSentence);
             SpeakSentence(currentSentence);
         }
+        Answer.TimeStampUTC = DateTime.UtcNow;
     }
 
     /// <summary>
@@ -160,7 +170,7 @@ public partial class OpenAIViewModel : ObservableObject
     private void ClearChat()
     {
         ClearQuestion();
-        Answer = string.Empty;
+        Answer = null;
     }
 
     /// <summary>
@@ -185,7 +195,7 @@ public partial class OpenAIViewModel : ObservableObject
         {
             mTokenSource = new CancellationTokenSource();
             IsListening = true;
-            IsReadyForListen = false;
+            IsReadyToListen = false;
             try
             {
                 Question = await mSpeech.Listen(CultureInfo.GetCultureInfo(Culture), new Progress<string>(partialText =>
@@ -204,14 +214,14 @@ public partial class OpenAIViewModel : ObservableObject
             {
                 Alert = ex.Message;
                 IsListening = false;
-                IsReadyForListen = true;
+                IsReadyToListen = true;
             }
         }
         else
         {
             Alert = _MIC;
             IsListening = false;
-            IsReadyForListen = false;
+            IsReadyToListen = false;
         }
     }
 
@@ -223,7 +233,7 @@ public partial class OpenAIViewModel : ObservableObject
     {
         mTokenSource?.Cancel();
         IsListening = false;
-        IsReadyForListen = true;
+        IsReadyToListen = true;
     }
 
     #endregion
@@ -238,7 +248,7 @@ public partial class OpenAIViewModel : ObservableObject
     private void OnStateChanged(object sender, StateChangedEventArgs e)
     {
         IsListening = e.IsListening;
-        IsReadyForListen = e.IsReasyForListen;
+        IsReadyToListen = e.IsReadyToListen;
         State = e.State;
     }
 
@@ -263,7 +273,7 @@ public partial class OpenAIViewModel : ObservableObject
     {
         await Task.Run(() =>
         {
-            Answer += t;
+            Answer.Content += t;
             Thread.Sleep(25);
         });
         return true;

@@ -16,7 +16,6 @@ public class ServiceConnector
 {
     #region Objects and variables
 
-    private const string _ERRUNKNOWN = "Unknown Error";
     private const string _UNKNOWN = "?";
 
     public const string KEY_API = "OPENAI_KEY";
@@ -42,8 +41,8 @@ public class ServiceConnector
     /// </summary>
     public ServiceConnector() // TODO: REMOVE VALUES!!!
     {
-        mClient = new OpenAIClient(new OpenAIAuthentication( 
-            "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", // Environment.GetEnvironmentVariable(KEY_API),
+        mClient = new OpenAIClient(new OpenAIAuthentication(
+            "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", // Environment.GetEnvironmentVariable(KEY_API),
             "org-Ssz4keu7TIM75Edx4JnRQdo5" // Environment.GetEnvironmentVariable(KEY_ORG)
         ));
     }

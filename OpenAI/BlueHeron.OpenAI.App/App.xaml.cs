@@ -31,8 +31,8 @@ public partial class App : Application
         var window = base.CreateWindow(activationState);
         
         window.Title = "BlueHeron OpenAI Playground";
-        window.MinimumWidth = 380;
-        window.MinimumHeight = 440;
+        window.MinimumWidth = 400;
+        window.MinimumHeight = 500;
         window.Width = window.MinimumWidth;
         window.Height = window.MinimumHeight;
 

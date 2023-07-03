@@ -9,6 +9,12 @@ namespace BlueHeron.OpenAI.Models;
 /// </summary>
 public partial class Chat : ObservableObject
 {
+    #region Objects and variables
+
+    private const string fmtDateTime = "yyyy-MM-dd HH:mm";
+
+    #endregion
+
     #region Properties
 
     /// <summary>
@@ -20,18 +26,13 @@ public partial class Chat : ObservableObject
     /// <summary>
     /// Gets or sets a boolean, determining whether this chat is active.
     /// </summary>
-    [ObservableProperty()]
+    [ObservableProperty]
     private bool _isActive;
-
-    /// <summary>
-    /// The date time the last message was posted, as UTC time.
-    /// </summary>
-    private DateTime? TimeStampUTC => ChatMessages.LastOrDefault()?.TimeStampUTC;
 
     /// <summary>
     /// The name or title of this chat.
     /// </summary>
-    [ObservableProperty()]
+    [ObservableProperty]
     private string _title;
 
     #endregion
@@ -41,14 +42,17 @@ public partial class Chat : ObservableObject
     /// <summary>
     /// Creates a new Chat.
     /// </summary>
-    public Chat()
-    {
-        _chatMessages.Add(new ChatMessage(ChatMessage.MSG_ASSISTANT, MessageType.System, DateTime.UtcNow, false));
-    }
+    public Chat() { }
 
     #endregion
 
     #region Public methods and functions
+
+    /// <summary>
+    /// Returns a default name for a new <see cref="Chat"/>.
+    /// </summary>
+    /// <returns>A string like 'New chat - 2023-07-01 12:00'.</returns>
+    public static string DefaultName() => $"New chat - {DateTime.UtcNow.ToString(fmtDateTime)}";
 
     /// <summary>
     /// Returns this chat as an <see cref="IList{Message}"/>.

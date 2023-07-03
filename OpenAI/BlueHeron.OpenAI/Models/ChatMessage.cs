@@ -19,26 +19,32 @@ public partial class ChatMessage : ObservableObject
     /// <summary>
     /// The contents of the message.
     /// </summary>
-    [ObservableProperty()]
+    [ObservableProperty]
     private string _content;
 
     /// <summary>
     /// Gets or sets a boolean, determining whether this message was or must be spoken.
     /// </summary>
-    [ObservableProperty()]
+    [ObservableProperty]
     private bool _isSpoken;
 
     /// <summary>
     /// The <see cref="OpenAI.MessageType"/> of the message.
     /// </summary>
-    [ObservableProperty()]
+    [ObservableProperty]
     private MessageType _messageType;
 
     /// <summary>
     /// The date time this message was posted, as UTC time.
     /// </summary>
-    [ObservableProperty()]
+    [ObservableProperty]
     private DateTime _timeStampUTC;
+
+    /// <summary>
+    /// The date time this message was posted, as local time.
+    /// </summary>
+    [ObservableProperty]
+    private DateTime _timeStamp;
 
     #endregion
 
@@ -56,6 +62,7 @@ public partial class ChatMessage : ObservableObject
         _content = content;
         _messageType = messageType;
         _timeStampUTC = timeStampUTC;
+        _timeStamp = _timeStampUTC.ToLocalTime();
         _isSpoken = isSpoken;
     }
 
@@ -81,7 +88,7 @@ public partial class ChatMessage : ObservableObject
     /// </summary>
     public override string ToString()
     {
-        return $"{TimeStampUTC} - {MessageType}";
+        return $"{TimeStampUTC} - {MessageType} - {Content}";
     }
 
     #endregion

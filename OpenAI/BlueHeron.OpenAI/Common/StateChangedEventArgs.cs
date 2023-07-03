@@ -16,7 +16,7 @@ public class StateChangedEventArgs : EventArgs
     /// <summary>
     /// Gets a value determining whether the recognizer is ready to start listening.
     /// </summary>
-    public bool IsReasyForListen { get; }
+    public bool IsReadyToListen { get; }
 
     /// <summary>
     /// Gets the current state of the recognizer.
@@ -31,12 +31,12 @@ public class StateChangedEventArgs : EventArgs
     /// Creates a new <see cref="StateChangedEventArgs"/> object.
     /// </summary>
     /// <param name="isListening">Boolean, determining whether the recognizer is listening</param>
-    /// <param name="isReadyForListen">Boolean, determining whether the recognizer is ready to start listening</param>
+    /// <param name="isReadyToListen">Boolean, determining whether the recognizer is ready to start listening</param>
     /// <param name="state">The current state of the recognizer</param>
-    public StateChangedEventArgs(bool isListening, bool isReadyForListen, string state)
+    public StateChangedEventArgs(bool isListening, bool isReadyToListen, string state)
     {
         IsListening = isListening;
-        IsReasyForListen = isReadyForListen;
+        IsReadyToListen = isReadyToListen;
         State = state;
     }
 

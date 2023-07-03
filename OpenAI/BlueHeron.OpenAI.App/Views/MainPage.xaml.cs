@@ -25,6 +25,15 @@ public partial class MainPage : TabbedPage
         mViewModel = viewModel;
         BindingContext = mViewModel;
         mViewModel.PropertyChanged += OnAlertChanged;
+        stack.SizeChanged += OnStackHeightChanged;
+    }
+
+    /// <summary>
+    /// Ensures that the last message is fully visible when added or modified.
+    /// </summary>
+    private async void OnStackHeightChanged(object? sender, EventArgs e)
+    {
+        await svw.ScrollToAsync(stack, ScrollToPosition.End, true);
     }
 
     /// <summary>
@@ -45,9 +54,14 @@ public partial class MainPage : TabbedPage
     /// <summary>
     /// Sets focus to the Question <see cref="Entry"/>.
     /// </summary>
-    private void ChatPageLoaded(object sender, EventArgs e)
+    protected override void OnAppearing()
     {
-        txtQuestion.Focus();
+        base.OnAppearing();
+        Application.Current?.Dispatcher.DispatchDelayed(new TimeSpan(0, 0, 0, 0, 500), () =>
+        {
+            GetParentWindow().Width += 0.5; // found no better way to fix the ScrollView inside Grid row of type * layout problem
+            txtQuestion.Focus();
+        });
     }
 
     /// <summary>
@@ -56,14 +70,6 @@ public partial class MainPage : TabbedPage
     private void QuestionCompleted(object sender, EventArgs e)
     {
         mViewModel.AnswerQuestionCommand.Execute(null);
-    }
-
-    /// <summary>
-    /// ...
-    /// </summary>
-    private void ToDoPageLoaded(object sender, EventArgs e)
-    {
-        // do stuff
     }
 
     /// <summary>

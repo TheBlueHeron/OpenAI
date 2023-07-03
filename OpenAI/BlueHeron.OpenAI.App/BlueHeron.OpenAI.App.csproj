@@ -53,64 +53,89 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="AppIcon.scale-100.png" />
-        <None Remove="AppIcon.scale-200.png" />
-        <None Remove="AppIcon.scale-400.png" />
-        <None Remove="BadgeLogo.scale-100.png" />
-        <None Remove="BadgeLogo.scale-200.png" />
-        <None Remove="BadgeLogo.scale-400.png" />
         <None Remove="BlueHeron.OpenAI.App.code-workspace" />
         <None Remove="BlueHeron.OpenAI.code-workspace" />
-        <None Remove="LargeTile.scale-100.png" />
-        <None Remove="LargeTile.scale-200.png" />
-        <None Remove="LargeTile.scale-400.png" />
-        <None Remove="MediumTile.scale-100.png" />
-        <None Remove="MediumTile.scale-200.png" />
-        <None Remove="MediumTile.scale-400.png" />
-        <None Remove="PackageLogo.scale-100.png" />
-        <None Remove="PackageLogo.scale-200.png" />
-        <None Remove="PackageLogo.scale-400.png" />
-        <None Remove="Resources\Fonts\segoe.ttf" />
-        <None Remove="Resources\Images\db.png" />
-        <None Remove="SmallTile.scale-100.png" />
-        <None Remove="SmallTile.scale-400.png" />
-        <None Remove="WideTile.scale-100.png" />
-        <None Remove="WideTile.scale-200.png" />
-        <None Remove="WideTile.scale-400.png" />
+        <None Remove="Resources\App\AppIcon.scale-100.png" />
+        <None Remove="Resources\App\AppIcon.scale-200.png" />
+        <None Remove="Resources\App\AppIcon.scale-400.png" />
+        <None Remove="Resources\App\AppIcon.targetsize-16.png" />
+        <None Remove="Resources\App\AppIcon.targetsize-16_altform-lightunplated.png" />
+        <None Remove="Resources\App\AppIcon.targetsize-16_altform-unplated.png" />
+        <None Remove="Resources\App\AppIcon.targetsize-256.png" />
+        <None Remove="Resources\App\AppIcon.targetsize-256_altform-lightunplated.png" />
+        <None Remove="Resources\App\AppIcon.targetsize-256_altform-unplated.png" />
+        <None Remove="Resources\App\AppIcon.targetsize-48.png" />
+        <None Remove="Resources\App\AppIcon.targetsize-48_altform-lightunplated.png" />
+        <None Remove="Resources\App\AppIcon.targetsize-48_altform-unplated.png" />
+        <None Remove="Resources\App\BadgeLogo.scale-100.png" />
+        <None Remove="Resources\App\BadgeLogo.scale-200.png" />
+        <None Remove="Resources\App\BadgeLogo.scale-400.png" />
+        <None Remove="Resources\App\LargeTile.scale-100.png" />
+        <None Remove="Resources\App\LargeTile.scale-200.png" />
+        <None Remove="Resources\App\LargeTile.scale-400.png" />
+        <None Remove="Resources\App\MediumTile.scale-100.png" />
+        <None Remove="Resources\App\MediumTile.scale-200.png" />
+        <None Remove="Resources\App\MediumTile.scale-400.png" />
+        <None Remove="Resources\App\PackageLogo.scale-100.png" />
+        <None Remove="Resources\App\PackageLogo.scale-200.png" />
+        <None Remove="Resources\App\PackageLogo.scale-400.png" />
+        <None Remove="Resources\App\SmallTile.scale-100.png" />
+        <None Remove="Resources\App\SmallTile.scale-200.png" />
+        <None Remove="Resources\App\SmallTile.scale-400.png" />
+        <None Remove="Resources\App\SplashScreen.scale-100.png" />
+        <None Remove="Resources\App\SplashScreen.scale-200.png" />
+        <None Remove="Resources\App\SplashScreen.scale-400.png" />
+        <None Remove="Resources\App\WideTile.scale-100.png" />
+        <None Remove="Resources\App\WideTile.scale-200.png" />
+        <None Remove="Resources\App\WideTile.scale-400.png" />
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="AppIcon.scale-100.png" />
-      <Content Include="AppIcon.scale-200.png" />
-      <Content Include="AppIcon.scale-400.png" />
-      <Content Include="BadgeLogo.scale-100.png" />
-      <Content Include="BadgeLogo.scale-200.png" />
-      <Content Include="BadgeLogo.scale-400.png" />
-      <Content Include="LargeTile.scale-100.png" />
-      <Content Include="LargeTile.scale-200.png" />
-      <Content Include="LargeTile.scale-400.png" />
-      <Content Include="MediumTile.scale-100.png" />
-      <Content Include="MediumTile.scale-200.png" />
-      <Content Include="MediumTile.scale-400.png" />
-      <Content Include="PackageLogo.scale-100.png" />
-      <Content Include="PackageLogo.scale-200.png" />
-      <Content Include="PackageLogo.scale-400.png" />
-      <Content Include="SmallTile.scale-100.png" />
-      <Content Include="SmallTile.scale-200.png" />
-      <Content Include="SmallTile.scale-400.png" />
-      <Content Include="WideTile.scale-100.png" />
-      <Content Include="WideTile.scale-200.png" />
-      <Content Include="WideTile.scale-400.png" />
+      <Content Include="Resources\App\AppIcon.scale-100.png" />
+      <Content Include="Resources\App\AppIcon.scale-200.png" />
+      <Content Include="Resources\App\AppIcon.scale-400.png" />
+      <Content Include="Resources\App\AppIcon.targetsize-16.png" />
+      <Content Include="Resources\App\AppIcon.targetsize-16_altform-lightunplated.png" />
+      <Content Include="Resources\App\AppIcon.targetsize-16_altform-unplated.png" />
+      <Content Include="Resources\App\AppIcon.targetsize-256.png" />
+      <Content Include="Resources\App\AppIcon.targetsize-256_altform-lightunplated.png" />
+      <Content Include="Resources\App\AppIcon.targetsize-256_altform-unplated.png" />
+      <Content Include="Resources\App\AppIcon.targetsize-48.png" />
+      <Content Include="Resources\App\AppIcon.targetsize-48_altform-lightunplated.png" />
+      <Content Include="Resources\App\AppIcon.targetsize-48_altform-unplated.png" />
+      <Content Include="Resources\App\BadgeLogo.scale-100.png" />
+      <Content Include="Resources\App\BadgeLogo.scale-200.png" />
+      <Content Include="Resources\App\BadgeLogo.scale-400.png" />
+      <Content Include="Resources\App\LargeTile.scale-100.png" />
+      <Content Include="Resources\App\LargeTile.scale-200.png" />
+      <Content Include="Resources\App\LargeTile.scale-400.png" />
+      <Content Include="Resources\App\MediumTile.scale-100.png" />
+      <Content Include="Resources\App\MediumTile.scale-200.png" />
+      <Content Include="Resources\App\MediumTile.scale-400.png" />
+      <Content Include="Resources\App\PackageLogo.scale-100.png" />
+      <Content Include="Resources\App\PackageLogo.scale-200.png" />
+      <Content Include="Resources\App\PackageLogo.scale-400.png" />
+      <Content Include="Resources\App\SmallTile.scale-100.png" />
+      <Content Include="Resources\App\SmallTile.scale-200.png" />
+      <Content Include="Resources\App\SmallTile.scale-400.png" />
+      <Content Include="Resources\App\SplashScreen.scale-100.png" />
+      <Content Include="Resources\App\SplashScreen.scale-200.png" />
+      <Content Include="Resources\App\SplashScreen.scale-400.png" />
+      <Content Include="Resources\App\WideTile.scale-100.png" />
+      <Content Include="Resources\App\WideTile.scale-200.png" />
+      <Content Include="Resources\App\WideTile.scale-400.png" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Maui.Controls.Foldable" Version="7.0.*" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Maui.Controls.Foldable" Version="$(MauiVersion)" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0-preview.5.23280.8" />
         <PackageReference Include="CommunityToolkit.Maui" Version="5.2.0" />
         <PackageReference Include="CommunityToolkit.Maui.Markup" Version="3.2.0" />
         <PackageReference Include="CommunityToolkit.Maui.MediaElement" Version="2.0.0" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.25387-preview" />
     </ItemGroup>
 
     <ItemGroup>
