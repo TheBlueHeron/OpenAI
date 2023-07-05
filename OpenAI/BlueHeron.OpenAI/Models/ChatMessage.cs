@@ -35,6 +35,12 @@ public partial class ChatMessage : ObservableObject
     private MessageType _messageType;
 
     /// <summary>
+    /// The <see cref="Content"/>, separated into sentences.
+    /// </summary>
+    [ObservableProperty()]
+    private List<string> _sentences;
+
+    /// <summary>
     /// The date time this message was posted, as UTC time.
     /// </summary>
     [ObservableProperty]
@@ -64,6 +70,7 @@ public partial class ChatMessage : ObservableObject
         _timeStampUTC = timeStampUTC;
         _timeStamp = _timeStampUTC.ToLocalTime();
         _isSpoken = isSpoken;
+        _sentences = new List<string>();
     }
 
     #endregion

@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel;
+using BlueHeron.OpenAI.Models;
 
 namespace BlueHeron.OpenAI.Views;
 
 /// <summary>
 /// The main application page.
 /// </summary>
-public partial class MainPage : TabbedPage
+public partial class MainPage : ContentPage
 {
     #region Objects and variables
 
@@ -33,7 +34,7 @@ public partial class MainPage : TabbedPage
     /// </summary>
     private async void OnStackHeightChanged(object? sender, EventArgs e)
     {
-        await svw.ScrollToAsync(stack, ScrollToPosition.End, true);
+        await svw.ScrollToAsync(stack, ScrollToPosition.End, false);
     }
 
     /// <summary>
@@ -52,6 +53,19 @@ public partial class MainPage : TabbedPage
     #region Events
 
     /// <summary>
+    /// Activates the selected <see cref="Chat"/>.
+    /// </summary>
+    /// <param name="sender">The <see cref="Picker"/></param>
+    /// <param name="e"><see cref="EventArgs"/>, unused</param>
+    private void ChatSelected(object sender, EventArgs e)
+    {
+        if (IsLoaded)
+        {
+            mViewModel.ActivateChat((Chat)((Picker)sender).SelectedItem);
+        }
+    }
+
+    /// <summary>
     /// Sets focus to the Question <see cref="Entry"/>.
     /// </summary>
     protected override void OnAppearing()
@@ -59,7 +73,10 @@ public partial class MainPage : TabbedPage
         base.OnAppearing();
         Application.Current?.Dispatcher.DispatchDelayed(new TimeSpan(0, 0, 0, 0, 500), () =>
         {
-            GetParentWindow().Width += 0.5; // found no better way to fix the ScrollView inside Grid row of type * layout problem
+            if (DeviceInfo.Platform == DevicePlatform.WinUI)
+            {
+                GetParentWindow().Width += 0.5; // found no better way to fix the ScrollView inside Grid row of type * layout problem
+            }
             txtQuestion.Focus();
         });
     }
@@ -79,6 +96,11 @@ public partial class MainPage : TabbedPage
     {
         _ = await mViewModel.Quit(); // despite careful disposing an error is generated on close, which is not captured by AppDomain.Current.UnhandledException
         base.OnDisappearing();
+    }
+
+    private void SettingsClicked(object sender, EventArgs e)
+    {
+        //
     }
 
     #endregion

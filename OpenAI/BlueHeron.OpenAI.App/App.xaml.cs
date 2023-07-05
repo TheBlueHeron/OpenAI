@@ -14,7 +14,7 @@ public partial class App : Application
     public App(IServiceProvider services)
     {
         InitializeComponent();
-        MainPage = services.GetService<MainPage>();
+        MainPage = new NavigationPage(services.GetService<MainPage>());
         AppDomain.CurrentDomain.UnhandledException += (s, e) =>
         {
             Debug.WriteLine("UnhandledException: " + (e.ExceptionObject as Exception)?.ToString());

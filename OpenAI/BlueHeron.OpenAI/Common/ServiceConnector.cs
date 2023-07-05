@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿using System.Reflection;
 using BlueHeron.OpenAI.Models;
 using OpenAI;
 using OpenAI.Chat;
@@ -39,12 +39,13 @@ public class ServiceConnector
     /// <summary>
     /// Creates a new <see cref="ServiceConnector"/>.
     /// </summary>
-    public ServiceConnector() // TODO: REMOVE VALUES!!!
+    public ServiceConnector()
     {
-        mClient = new OpenAIClient(new OpenAIAuthentication(
-            "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", // Environment.GetEnvironmentVariable(KEY_API),
-            "org-Ssz4keu7TIM75Edx4JnRQdo5" // Environment.GetEnvironmentVariable(KEY_ORG)
-        ));
+        //mClient = new OpenAIClient(new OpenAIAuthentication(
+        //    "sk-aaaaabbbbbcccccddddd", // Environment.GetEnvironmentVariable(KEY_API),
+        //    "org-eeeeefffffggggghhhhh" // Environment.GetEnvironmentVariable(KEY_ORG)
+        //));
+        mClient = new OpenAIClient(OpenAIAuthentication.LoadFromDirectory(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))); // assumes the presence of a file named '.openai' in the output directory. See: https://github.com/RageAgainstThePixel/OpenAI-DotNet#load-key-from-configuration-file
     }
 
     #endregion
@@ -61,20 +62,52 @@ public class ServiceConnector
         var messages = chat.AsOpenAIChat();
         var chatRequest = new ChatRequest(messages);
 
-        await foreach (var result in mClient.ChatEndpoint.StreamCompletionEnumerableAsync(chatRequest))
+        var iterator = mClient.ChatEndpoint.StreamCompletionEnumerableAsync(chatRequest).GetAsyncEnumerator();
+        var more = true;
+        var msgError = string.Empty;
+
+        while (more)
         {
-            foreach (var choice in result.Choices.Where(choice => !string.IsNullOrWhiteSpace(choice.Delta?.Content)))
+            try
             {
-                if (choice.FinishReason == null)
+                more = await iterator.MoveNextAsync();
+            }
+            catch (Exception e)
+            {
+                more = false;
+                msgError = e.Message;
+            }
+
+            if (more)
+            {
+                IEnumerable<Choice> choices = null;
+
+                try
                 {
-                    yield return choice.Delta.Content;
+                    choices = iterator.Current.Choices.Where(choice => !string.IsNullOrWhiteSpace(choice.Delta?.Content));
                 }
-                else
+                catch (Exception ex)
                 {
-                    Debug.WriteLine(choice.FinishReason);
-                    yield return _UNKNOWN;
+                    choices = Array.Empty<Choice>();
+                    more = false;
+                    msgError = ex.Message;
+                }
+                foreach (var choice in choices)
+                {
+                    if (choice.FinishReason == null)
+                    {
+                        yield return choice.Delta.Content;
+                    }
+                    else
+                    {
+                        yield return choice.FinishReason; // _UNKNOWN;
+                    }
                 }
             }
+        }
+        if (!string.IsNullOrEmpty(msgError))
+        {
+            yield return msgError;
         }
     }
 

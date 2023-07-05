@@ -12,11 +12,13 @@ public partial class OpenAIViewModel : ObservableObject
 {
     #region Objects and variables
 
+    private const string _DOT = ".";
     private const string _MIC = "No microphone access!";
-    private const string _SPC = " ";
+    private const string _QUOTE = "\"";
+    private const char _SPC = ' ';
 
-    private readonly ChatCollection mChats;
     private readonly ServiceConnector mConnector;
+    private readonly HashSet<string> mSentenceEndings = new() { _DOT, "?", "!" };
     private readonly ISpeechToText mSpeech;
     private CancellationTokenSource mTokenSource;
 
@@ -73,12 +75,6 @@ public partial class OpenAIViewModel : ObservableObject
     private string _question = string.Empty;
 
     /// <summary>
-    /// The latest answer received from the <see cref="ServiceConnector"/>, separated into sentences.
-    /// </summary>
-    [ObservableProperty()]
-    private List<string> _sentences;
-
-    /// <summary>
     /// The current state of the <see cref="ISpeechToText"/> implementation.
     /// </summary>
     [ObservableProperty()]
@@ -95,11 +91,11 @@ public partial class OpenAIViewModel : ObservableObject
     /// <param name="speech">The <see cref="ISpeechToText"/> to use</param>
     public OpenAIViewModel(ServiceConnector connector, ISpeechToText speech)
     {
-        mChats = new()
+        _chats = new()
         {
             new Chat() { IsActive = true, Title = Chat.DefaultName() }
         };
-        ActiveChat = mChats.First();
+        ActiveChat = _chats.First();
         mConnector = connector;
         mSpeech = speech;
         mSpeech.StateChanged += OnStateChanged;
@@ -108,6 +104,26 @@ public partial class OpenAIViewModel : ObservableObject
     #endregion
 
     #region Public methods and functions
+
+    /// <summary>
+    /// Activates the given <see cref="Chat"/>.
+    /// </summary>
+    /// <param name="chat">The <see cref="Chat"/> to activate</param>
+    public void ActivateChat(Chat chat)
+    {
+        if (chat != null)
+        {
+            if (ActiveChat != null)
+            {
+                ActiveChat.IsActive = false;
+            }
+            chat.IsActive = true;
+            if (ActiveChat != chat)
+            {
+                ActiveChat = chat;
+            }
+        }
+    }
 
     /// <summary>
     /// Cleans up resources.
@@ -123,44 +139,34 @@ public partial class OpenAIViewModel : ObservableObject
     #region Commands
 
     /// <summary>
+    /// The 'AddChat' command, that adds a new chat to the <see cref="Chats"/> collection and activates it.
+    /// </summary>
+    [RelayCommand]
+    private void AddChat()
+    {
+        var newChat = new Chat() { IsActive = true, Title = Chat.DefaultName() };
+        Chats.Add(newChat);
+        ActivateChat(newChat);
+    }
+
+    /// <summary>
     /// The 'AnswerQuestion' command that calls <see cref="ServiceConnector.Update(Chat)"/> and asynchronously and repeatedly updates the <see cref="Answer"/> property as it is received as a stream of string tokens.
     /// </summary>
     [RelayCommand]
     private async void AnswerQuestion()
     {
-        var currentSentence = string.Empty;
-
-        Sentences = new List<string>();
         if (ActiveChat.ChatMessages.Count == 0)
         {
             ActiveChat.ChatMessages.Add(new ChatMessage(ChatMessage.MSG_ASSISTANT, MessageType.System, DateTime.UtcNow, false));
         }
+        if (!mSentenceEndings.Contains(Question.Last().ToString()))
+        {
+            Question += _DOT; // prevent GPT from completing the input
+        }
         ActiveChat.ChatMessages.Add(new ChatMessage(Question, MessageType.Question, DateTime.UtcNow, false));
         ClearQuestion();
 
-        var response = mConnector.Update(ActiveChat);
-        Answer = new ChatMessage(string.Empty, MessageType.Answer, DateTime.UtcNow, false);
-        ActiveChat.ChatMessages.Add(Answer);
-        await foreach (var t in response)
-        {
-            if (!string.IsNullOrEmpty(t))
-            {
-                _ = await UpdateAnswer(t);
-                currentSentence += t;
-                if (t == ".")
-                {
-                    Sentences.Add(currentSentence);
-                    SpeakSentence(currentSentence);
-                    currentSentence = string.Empty;
-                }
-            }
-        }
-        if (!string.IsNullOrEmpty(currentSentence)) // no trailing dot
-        {
-            Sentences.Add(currentSentence);
-            SpeakSentence(currentSentence);
-        }
-        Answer.TimeStampUTC = DateTime.UtcNow;
+        await ParseChatResponse(mConnector.Update(ActiveChat));        
     }
 
     /// <summary>
@@ -181,6 +187,22 @@ public partial class OpenAIViewModel : ObservableObject
     {
         Question = string.Empty;
         ListenCancel();
+    }
+
+    /// <summary>
+    /// The 'DeleteChat' command, that deletes the active chat from the <see cref="Chats"/> collection.
+    /// If the collection has become empty, a new <see cref="Chat"/> is added and activated.
+    /// </summary>
+    [RelayCommand]
+    private void DeleteChat()
+    {
+        Chats.Remove(ActiveChat);
+        if (!Chats.Any())
+        {
+            var newChat = new Chat() { IsActive = true, Title = Chat.DefaultName() };
+            Chats.Add(newChat);
+        }        
+        ActivateChat(Chats.First());
     }
 
     /// <summary>
@@ -236,6 +258,73 @@ public partial class OpenAIViewModel : ObservableObject
         IsReadyToListen = true;
     }
 
+    /// <summary>
+    /// Parses the response stream into sentences - speaking them if needed - and adds a <see cref="ChatMessage"/> of type <see cref="MessageType.Answer"/> to the <see cref="ActiveChat"/>.
+    /// </summary>
+    /// <param name="response">The <see cref="IAsyncEnumerable{string}"/> returned by the <see cref="ServiceConnector"/></param>
+    /// <returns>A <see cref="Task"/></returns>
+    private async Task ParseChatResponse(IAsyncEnumerable<string> response)
+    {
+        var currentSentence = string.Empty;
+        var isQuote = false;
+        bool isCurrentNumeric;
+        bool isPreviousNumeric;
+        var currentToken = string.Empty;
+        var isFirst = true;
+        bool mustAddSpace;
+        var curIndex = -1;
+
+        Answer = new ChatMessage(string.Empty, MessageType.Answer, DateTime.UtcNow, false);
+        ActiveChat.ChatMessages.Add(Answer);
+
+        await foreach (var t in response)
+        {
+            if (!string.IsNullOrEmpty(t))
+            {
+                isCurrentNumeric = int.TryParse(t, out _);
+                isPreviousNumeric = !isFirst && (currentToken == _DOT || int.TryParse(currentToken, out _));
+
+                if (!isCurrentNumeric && currentToken == _DOT) // previous token was a number followed by a dot, therefore if the current token is not a number the dot is a line ending and not a decimal separator.
+                {
+                    Answer.Sentences.Add(currentSentence);
+                    SpeakSentence(currentSentence);
+                    currentSentence = string.Empty;
+                    curIndex = -1;
+                    isFirst = true;
+                }
+
+                mustAddSpace = isCurrentNumeric && !isPreviousNumeric && !isFirst; // numbers within a sentence are parsed without preceding space character
+                currentToken = mustAddSpace ? _SPC + t : t;
+                currentSentence += currentToken;
+                curIndex += t.Length + (mustAddSpace ? 1 : 0);
+                isFirst = false;
+
+                await UpdateAnswer(currentToken);
+
+                if (t == _QUOTE) // treated quoted sentences as part of the containing sentence (i.e. ignore line endings)
+                {
+                    isQuote = !isQuote;
+                    continue;
+                }
+
+                if (!isQuote && !isPreviousNumeric && mSentenceEndings.Contains(t)) // detect end of sentence versus possible decimal separator
+                {
+                    Answer.Sentences.Add(currentSentence);
+                    SpeakSentence(currentSentence);
+                    currentSentence = string.Empty;
+                    curIndex = -1;
+                    isFirst = true;
+                }
+            }
+        }
+        if (!string.IsNullOrEmpty(currentSentence)) // no trailing dot, or the sentence ended with a number followed by a dot.
+        {
+            Answer.Sentences.Add(currentSentence);
+            SpeakSentence(currentSentence);
+        }
+        Answer.TimeStampUTC = DateTime.UtcNow;
+    }
+
     #endregion
 
     #region Private methods and functions
@@ -269,14 +358,13 @@ public partial class OpenAIViewModel : ObservableObject
     /// </summary>
     /// <param name="t">The next token</param>
     /// <returns><see langword="true"/></returns>
-    private async Task<bool> UpdateAnswer(string t)
+    private async Task UpdateAnswer(string t)
     {
         await Task.Run(() =>
         {
             Answer.Content += t;
             Thread.Sleep(25);
         });
-        return true;
     }
 
     #endregion
