@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Text.Json.Serialization;
+using CommunityToolkit.Mvvm.ComponentModel;
 using OpenAI.Chat;
 
 namespace BlueHeron.OpenAI.Models;
@@ -50,6 +51,7 @@ public partial class ChatMessage : ObservableObject
     /// The date time this message was posted, as local time.
     /// </summary>
     [ObservableProperty]
+    [property: JsonIgnore] // will be populated in constructor when deserializing
     private DateTime _timeStamp;
 
     #endregion

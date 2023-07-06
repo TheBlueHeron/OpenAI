@@ -313,6 +313,9 @@
 				WidthRequest="48"
 				SemanticProperties.Hint="Answer the question."
 				Style="{StaticResource PrimaryAction}">
+				<Button.CommandParameter>
+					<x:Boolean>true</x:Boolean>
+				</Button.CommandParameter>
 				<Button.ImageSource>
 					<FontImageSource FontFamily="Segoe MDL2 Assets"
 								 Size="16"

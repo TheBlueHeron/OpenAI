@@ -111,7 +111,7 @@ public partial class OpenAIViewModel : ObservableObject
         ActiveChat = _chats.First(c => c.IsActive);
         mConnector = connector;
         mSpeech = speech;
-        mSpeech.StateChanged += OnStateChanged;
+        mSpeech.StateChanged += OnSpeechStateChanged;
     }
 
     #endregion
@@ -171,21 +171,22 @@ public partial class OpenAIViewModel : ObservableObject
     /// <summary>
     /// The 'AnswerQuestion' command that calls <see cref="OpenAIService.Update(Chat)"/> and asynchronously and repeatedly updates the <see cref="Answer"/> property as it is received as a stream of string tokens.
     /// </summary>
+    /// <param name="isSpoken">The question was raised through speech</param>
     [RelayCommand]
-    private async void AnswerQuestion()
+    private async void AnswerQuestion(bool isSpoken)
     {
         if (ActiveChat.Messages.Count == 0)
         {
-            ActiveChat.Messages.Add(new ChatMessage(ChatMessage.MSG_ASSISTANT, MessageType.System, DateTime.UtcNow, false));
+            ActiveChat.Messages.Add(new ChatMessage(ChatMessage.MSG_ASSISTANT, MessageType.System, DateTime.UtcNow, isSpoken));
         }
         if (!mSentenceEndings.Contains(Question.Last().ToString()))
         {
             Question += _DOT; // prevent GPT from completing the input
         }
-        ActiveChat.Messages.Add(new ChatMessage(Question, MessageType.Question, DateTime.UtcNow, false));
+        ActiveChat.Messages.Add(new ChatMessage(Question, MessageType.Question, DateTime.UtcNow, isSpoken));
         ClearQuestion();
 
-        await ParseChatResponse(mConnector.Update(ActiveChat));        
+        await ParseChatResponse(mConnector.Update(ActiveChat), isSpoken);        
     }
 
     /// <summary>
@@ -281,9 +282,10 @@ public partial class OpenAIViewModel : ObservableObject
     /// <summary>
     /// Parses the response stream into sentences - speaking them if needed - and adds a <see cref="ChatMessage"/> of type <see cref="MessageType.Answer"/> to the <see cref="ActiveChat"/>.
     /// </summary>
-    /// <param name="response">The <see cref="IAsyncEnumerable{string}"/> returned by the <see cref="OpenAIService"/></param>
+    /// <param name="response">The <see cref="IAsyncEnumerable{String}"/> returned by the <see cref="OpenAIService"/></param>
+    /// <param name="isSpoken">The question was raised through speech</param>
     /// <returns>A <see cref="Task"/></returns>
-    private async Task ParseChatResponse(IAsyncEnumerable<string> response)
+    private async Task ParseChatResponse(IAsyncEnumerable<string> response, bool isSpoken)
     {
         var currentSentence = string.Empty;
         var isQuote = false;
@@ -293,6 +295,17 @@ public partial class OpenAIViewModel : ObservableObject
         var isFirst = true;
         bool mustAddSpace;
         var curIndex = -1;
+        var handleSentence = new Action(() => 
+         {
+             Answer.Sentences.Add(currentSentence);
+            if (isSpoken)
+            {
+                SpeakSentence(currentSentence);
+            }
+            currentSentence = string.Empty;
+            curIndex = -1;
+            isFirst = true;
+        });
 
         Answer = new ChatMessage(string.Empty, MessageType.Answer, DateTime.UtcNow, false);
         ActiveChat.Messages.Add(Answer);
@@ -306,11 +319,7 @@ public partial class OpenAIViewModel : ObservableObject
 
                 if (!isCurrentNumeric && currentToken == _DOT) // previous token was a number followed by a dot, therefore if the current token is not a number the dot is a line ending and not a decimal separator.
                 {
-                    Answer.Sentences.Add(currentSentence);
-                    SpeakSentence(currentSentence);
-                    currentSentence = string.Empty;
-                    curIndex = -1;
-                    isFirst = true;
+                    handleSentence();
                 }
 
                 mustAddSpace = isCurrentNumeric && !isPreviousNumeric && !isFirst; // numbers within a sentence are parsed without preceding space character
@@ -329,18 +338,13 @@ public partial class OpenAIViewModel : ObservableObject
 
                 if (!isQuote && !isPreviousNumeric && mSentenceEndings.Contains(t)) // detect end of sentence versus possible decimal separator
                 {
-                    Answer.Sentences.Add(currentSentence);
-                    SpeakSentence(currentSentence);
-                    currentSentence = string.Empty;
-                    curIndex = -1;
-                    isFirst = true;
+                    handleSentence();
                 }
             }
         }
         if (!string.IsNullOrEmpty(currentSentence)) // no trailing dot, or the sentence ended with a number followed by a dot.
         {
-            Answer.Sentences.Add(currentSentence);
-            SpeakSentence(currentSentence);
+            handleSentence();
         }
         Answer.TimeStampUTC = DateTime.UtcNow;
     }
@@ -354,7 +358,7 @@ public partial class OpenAIViewModel : ObservableObject
     /// </summary>
     /// <param name="sender">The <see cref="ISpeechToText"/> implementation</param>
     /// <param name="e">The <see cref="SpeechRecognizerStateChangedEventArgs"/></param>
-    private void OnStateChanged(object sender, SpeechRecognizerStateChangedEventArgs e)
+    private void OnSpeechStateChanged(object sender, SpeechRecognizerStateChangedEventArgs e)
     {
         IsListening = e.IsListening;
         IsReadyToListen = e.IsReadyToListen;

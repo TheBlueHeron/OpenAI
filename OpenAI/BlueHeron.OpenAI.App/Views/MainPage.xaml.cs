@@ -86,7 +86,7 @@ public partial class MainPage : ContentPage
     /// </summary>
     private void QuestionCompleted(object sender, EventArgs e)
     {
-        mViewModel.AnswerQuestionCommand.Execute(null);
+        mViewModel.AnswerQuestionCommand.Execute(false);
     }
 
     /// <summary>
