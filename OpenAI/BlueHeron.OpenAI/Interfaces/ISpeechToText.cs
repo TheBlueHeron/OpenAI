@@ -31,5 +31,5 @@ public interface ISpeechToText
     /// <summary>
     /// Event is raised when the state of the inner speech recognizer has changed.
     /// </summary>
-    public event EventHandler<StateChangedEventArgs> StateChanged;
+    public event EventHandler<SpeechRecognizerStateChangedEventArgs> StateChanged;
 }

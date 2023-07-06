@@ -8,18 +8,12 @@ namespace BlueHeron.OpenAI;
 
 /// <summary>
 /// Handles the connection to an <see cref="OpenAIClient"/>.
-/// The <see cref="ServiceConnector"/> expects two environment variables to be present on the local machine:
-/// 'OPENAI_KEY': must hold a valid OpenAI API key. See: https://platform.openai.com/account/api-keys
-/// 'OPENAI_ORG': must hold a registered organisation id. See: https://platform.openai.com/account/org-settings
+/// The <see cref="OpenAIService"/> expects  a json file named '.openai' to be present in the same directory as the application executable.
+/// For details on the expected file contents, see: https://github.com/RageAgainstThePixel/OpenAI-DotNet#load-key-from-configuration-file
 /// </summary>
-public class ServiceConnector
+public class OpenAIService
 {
     #region Objects and variables
-
-    private const string _UNKNOWN = "?";
-
-    public const string KEY_API = "OPENAI_KEY";
-    public const string KEY_ORG = "OPENAI_ORG";
 
     private readonly OpenAIClient mClient;
 
@@ -28,7 +22,7 @@ public class ServiceConnector
     #region Properties
 
     /// <summary>
-    /// The <see cref="OpenAIClient"/> to use for connecting to OpenAI.
+    /// The <see cref="OpenAIClient"/>, used to communicate with the OpenAI API.
     /// </summary>
     public OpenAIClient Client => mClient;
 
@@ -37,15 +31,11 @@ public class ServiceConnector
     #region Construction
 
     /// <summary>
-    /// Creates a new <see cref="ServiceConnector"/>.
+    /// Creates a new <see cref="OpenAIService"/>.
     /// </summary>
-    public ServiceConnector()
+    public OpenAIService()
     {
-        //mClient = new OpenAIClient(new OpenAIAuthentication(
-        //    "sk-aaaaabbbbbcccccddddd", // Environment.GetEnvironmentVariable(KEY_API),
-        //    "org-eeeeefffffggggghhhhh" // Environment.GetEnvironmentVariable(KEY_ORG)
-        //));
-        mClient = new OpenAIClient(OpenAIAuthentication.LoadFromDirectory(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))); // assumes the presence of a file named '.openai' in the output directory. See: https://github.com/RageAgainstThePixel/OpenAI-DotNet#load-key-from-configuration-file
+        mClient = new OpenAIClient(OpenAIAuthentication.LoadFromDirectory(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)));
     }
 
     #endregion

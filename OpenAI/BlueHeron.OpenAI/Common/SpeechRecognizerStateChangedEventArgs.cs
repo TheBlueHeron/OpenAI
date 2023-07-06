@@ -4,7 +4,7 @@ namespace BlueHeron.OpenAI;
 /// <summary>
 /// <see cref="EventArgs"/> for the <see cref="ISpeechToText.StateChanged"/> event.
 /// </summary>
-public class StateChangedEventArgs : EventArgs
+public class SpeechRecognizerStateChangedEventArgs : EventArgs
 {
     #region Properties
 
@@ -28,12 +28,12 @@ public class StateChangedEventArgs : EventArgs
     #region Construction
 
     /// <summary>
-    /// Creates a new <see cref="StateChangedEventArgs"/> object.
+    /// Creates a new <see cref="SpeechRecognizerStateChangedEventArgs"/> object.
     /// </summary>
     /// <param name="isListening">Boolean, determining whether the recognizer is listening</param>
     /// <param name="isReadyToListen">Boolean, determining whether the recognizer is ready to start listening</param>
     /// <param name="state">The current state of the recognizer</param>
-    public StateChangedEventArgs(bool isListening, bool isReadyToListen, string state)
+    public SpeechRecognizerStateChangedEventArgs(bool isListening, bool isReadyToListen, string state)
     {
         IsListening = isListening;
         IsReadyToListen = isReadyToListen;

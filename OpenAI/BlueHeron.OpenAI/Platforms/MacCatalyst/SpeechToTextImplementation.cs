@@ -12,7 +12,7 @@ public partial class SpeechToTextImplementation : ISpeechToText
     private SFSpeechRecognizer speechRecognizer;
     private SFSpeechRecognitionTask recognitionTask;
 
-    public event EventHandler<StateChangedEventArgs> StateChanged;
+    public event EventHandler<SpeechRecognizerStateChangedEventArgs> StateChanged;
 
     public ValueTask DisposeAsync()
     {

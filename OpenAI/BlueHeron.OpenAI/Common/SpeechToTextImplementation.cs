@@ -2,6 +2,6 @@
 namespace BlueHeron.OpenAI;
 
 /// <summary>
-/// Device independent <see cref="ISpeechToText" /> implementation.
+/// Device independent part of the <see cref="ISpeechToText" /> implementation.
 /// </summary>
 public partial class SpeechToTextImplementation { }

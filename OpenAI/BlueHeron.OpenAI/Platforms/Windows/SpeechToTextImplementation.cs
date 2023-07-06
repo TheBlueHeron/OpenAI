@@ -24,7 +24,7 @@ public partial class SpeechToTextImplementation : ISpeechToText
     private SpeechRecognizer mSpeechRecognizer;
     private string mRecognizedText;
 
-    public event EventHandler<StateChangedEventArgs> StateChanged;
+    public event EventHandler<SpeechRecognizerStateChangedEventArgs> StateChanged;
 
     #endregion
 
@@ -126,7 +126,7 @@ public partial class SpeechToTextImplementation : ISpeechToText
                         isReady = false;
                         break;
                 }
-                StateChanged?.Invoke(this, new StateChangedEventArgs(isListening, isReady, e.State.ToString()));
+                StateChanged?.Invoke(this, new SpeechRecognizerStateChangedEventArgs(isListening, isReady, e.State.ToString()));
             };
             mSpeechRecognizer.ContinuousRecognitionSession.ResultGenerated += (s, e) =>
             {

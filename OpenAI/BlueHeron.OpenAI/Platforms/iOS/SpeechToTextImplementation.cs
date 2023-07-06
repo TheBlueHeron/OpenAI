@@ -12,7 +12,7 @@ public partial class SpeechToTextImplementation : ISpeechToText
     private SFSpeechRecognizer speechRecognizer;
     private SFSpeechRecognitionTask recognitionTask;
 
-    public event EventHandler<StateChangedEventArgs> StateChanged;
+    public event EventHandler<SpeechRecognizerStateChangedEventArgs> StateChanged;
 
     public async Task<string> Listen(CultureInfo culture, IProgress<string> recognitionResult, CancellationToken cancellationToken)
     {

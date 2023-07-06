@@ -234,7 +234,7 @@
 			<ScrollView x:Name="svw">
 				<StackLayout x:Name="stack"
 						 Orientation="Vertical"
-						 BindableLayout.ItemsSource="{Binding ActiveChat.ChatMessages, Mode=OneWay}"
+						 BindableLayout.ItemsSource="{Binding ActiveChat.Messages, Mode=OneWay}"
 						 BindableLayout.ItemTemplateSelector="{StaticResource ChatMessageTemplateSelector}">
 				</StackLayout>
 			</ScrollView>

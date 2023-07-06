@@ -6,18 +6,21 @@ using CommunityToolkit.Mvvm.Input;
 namespace BlueHeron.OpenAI.ViewModels;
 
 /// <summary>
-/// An <see cref="ObservableObject"/> that exposes bindable properties and <see cref="IRelayCommand"/>s for <see cref="ServiceConnector"/> and <see cref="ISpeechToText"/> functionality.
+/// An <see cref="ObservableObject"/> that exposes bindable properties and <see cref="IRelayCommand"/>s for <see cref="OpenAIService"/> and <see cref="ISpeechToText"/> functionality.
 /// </summary>
 public partial class OpenAIViewModel : ObservableObject
 {
     #region Objects and variables
 
+    private const int _ANSWERUPDATEDELAY = 25; // enhance the effect of 'live writing' of the answer
+    private const string _CHATSFILE = "chats.json";
+    private const string _DEFAULTCULTURE = "en-us";
     private const string _DOT = ".";
     private const string _MIC = "No microphone access!";
     private const string _QUOTE = "\"";
     private const char _SPC = ' ';
 
-    private readonly ServiceConnector mConnector;
+    private readonly OpenAIService mConnector;
     private readonly HashSet<string> mSentenceEndings = new() { _DOT, "?", "!" };
     private readonly ISpeechToText mSpeech;
     private CancellationTokenSource mTokenSource;
@@ -39,7 +42,7 @@ public partial class OpenAIViewModel : ObservableObject
     private string _alert = string.Empty;
 
     /// <summary>
-    /// The latest answer received from the <see cref="ServiceConnector"/>.
+    /// The latest answer received from the <see cref="OpenAIService"/>.
     /// </summary>
     [ObservableProperty()]
     private ChatMessage _answer;
@@ -54,7 +57,7 @@ public partial class OpenAIViewModel : ObservableObject
     /// The culture to use when converting speech to text.
     /// </summary>
     [ObservableProperty()]
-    private string _culture = "en-us";
+    private string _culture = _DEFAULTCULTURE;
 
     /// <summary>
     /// Gets a boolean, determining whether the speech recognizer is currently listening.
@@ -69,7 +72,7 @@ public partial class OpenAIViewModel : ObservableObject
     private bool _isReadyToListen = true;
 
     /// <summary>
-    /// The latest question posted to the <see cref="ServiceConnector"/>.
+    /// The latest question posted to the <see cref="OpenAIService"/>.
     /// </summary>
     [ObservableProperty()]
     private string _question = string.Empty;
@@ -87,15 +90,25 @@ public partial class OpenAIViewModel : ObservableObject
     /// <summary>
     /// Creates a new <see cref="OpenAIViewModel"/>
     /// </summary>
-    /// <param name="connector">The <see cref="ServiceConnector"/> to use</param>
+    /// <param name="connector">The <see cref="OpenAIService"/> to use</param>
     /// <param name="speech">The <see cref="ISpeechToText"/> to use</param>
-    public OpenAIViewModel(ServiceConnector connector, ISpeechToText speech)
+    public OpenAIViewModel(OpenAIService connector, ISpeechToText speech)
     {
-        _chats = new()
+        var path = Path.Combine(FileSystem.Current.AppDataDirectory, _CHATSFILE);
+
+        if (File.Exists(path))
+        {
+            try
+            {
+                _chats = ChatCollection.FromJson(File.ReadAllText(path));
+            }
+            catch { } // ignore
+        }
+        _chats ??= new()
         {
             new Chat() { IsActive = true, Title = Chat.DefaultName() }
         };
-        ActiveChat = _chats.First();
+        ActiveChat = _chats.First(c => c.IsActive);
         mConnector = connector;
         mSpeech = speech;
         mSpeech.StateChanged += OnStateChanged;
@@ -131,6 +144,12 @@ public partial class OpenAIViewModel : ObservableObject
     public async Task<bool> Quit()
     {
         mTokenSource?.Dispose();
+        try
+        {
+            File.WriteAllText(Path.Combine(FileSystem.Current.AppDataDirectory, _CHATSFILE), Chats.ToJson());
+        }
+        catch { } // ignore
+
         return mSpeech is null || await mSpeech.Quit();
     }
 
@@ -150,27 +169,27 @@ public partial class OpenAIViewModel : ObservableObject
     }
 
     /// <summary>
-    /// The 'AnswerQuestion' command that calls <see cref="ServiceConnector.Update(Chat)"/> and asynchronously and repeatedly updates the <see cref="Answer"/> property as it is received as a stream of string tokens.
+    /// The 'AnswerQuestion' command that calls <see cref="OpenAIService.Update(Chat)"/> and asynchronously and repeatedly updates the <see cref="Answer"/> property as it is received as a stream of string tokens.
     /// </summary>
     [RelayCommand]
     private async void AnswerQuestion()
     {
-        if (ActiveChat.ChatMessages.Count == 0)
+        if (ActiveChat.Messages.Count == 0)
         {
-            ActiveChat.ChatMessages.Add(new ChatMessage(ChatMessage.MSG_ASSISTANT, MessageType.System, DateTime.UtcNow, false));
+            ActiveChat.Messages.Add(new ChatMessage(ChatMessage.MSG_ASSISTANT, MessageType.System, DateTime.UtcNow, false));
         }
         if (!mSentenceEndings.Contains(Question.Last().ToString()))
         {
             Question += _DOT; // prevent GPT from completing the input
         }
-        ActiveChat.ChatMessages.Add(new ChatMessage(Question, MessageType.Question, DateTime.UtcNow, false));
+        ActiveChat.Messages.Add(new ChatMessage(Question, MessageType.Question, DateTime.UtcNow, false));
         ClearQuestion();
 
         await ParseChatResponse(mConnector.Update(ActiveChat));        
     }
 
     /// <summary>
-    /// Clears the chat and starts a new one.
+    /// Clears the currently active chat.
     /// </summary>
     [RelayCommand]
     private void ClearChat()
@@ -191,6 +210,7 @@ public partial class OpenAIViewModel : ObservableObject
 
     /// <summary>
     /// The 'DeleteChat' command, that deletes the active chat from the <see cref="Chats"/> collection.
+    /// The first <see cref="Chat"/> in the collection will become active.
     /// If the collection has become empty, a new <see cref="Chat"/> is added and activated.
     /// </summary>
     [RelayCommand]
@@ -261,7 +281,7 @@ public partial class OpenAIViewModel : ObservableObject
     /// <summary>
     /// Parses the response stream into sentences - speaking them if needed - and adds a <see cref="ChatMessage"/> of type <see cref="MessageType.Answer"/> to the <see cref="ActiveChat"/>.
     /// </summary>
-    /// <param name="response">The <see cref="IAsyncEnumerable{string}"/> returned by the <see cref="ServiceConnector"/></param>
+    /// <param name="response">The <see cref="IAsyncEnumerable{string}"/> returned by the <see cref="OpenAIService"/></param>
     /// <returns>A <see cref="Task"/></returns>
     private async Task ParseChatResponse(IAsyncEnumerable<string> response)
     {
@@ -275,7 +295,7 @@ public partial class OpenAIViewModel : ObservableObject
         var curIndex = -1;
 
         Answer = new ChatMessage(string.Empty, MessageType.Answer, DateTime.UtcNow, false);
-        ActiveChat.ChatMessages.Add(Answer);
+        ActiveChat.Messages.Add(Answer);
 
         await foreach (var t in response)
         {
@@ -330,11 +350,11 @@ public partial class OpenAIViewModel : ObservableObject
     #region Private methods and functions
 
     /// <summary>
-    /// Updates the UI when the speech recognizer state has changed.
+    /// Updates the UI when the state of the speech recognizer has changed.
     /// </summary>
     /// <param name="sender">The <see cref="ISpeechToText"/> implementation</param>
-    /// <param name="e">The <see cref="StateChangedEventArgs"/></param>
-    private void OnStateChanged(object sender, StateChangedEventArgs e)
+    /// <param name="e">The <see cref="SpeechRecognizerStateChangedEventArgs"/></param>
+    private void OnStateChanged(object sender, SpeechRecognizerStateChangedEventArgs e)
     {
         IsListening = e.IsListening;
         IsReadyToListen = e.IsReadyToListen;
@@ -363,7 +383,7 @@ public partial class OpenAIViewModel : ObservableObject
         await Task.Run(() =>
         {
             Answer.Content += t;
-            Thread.Sleep(25);
+            Thread.Sleep(_ANSWERUPDATEDELAY);
         });
     }
 

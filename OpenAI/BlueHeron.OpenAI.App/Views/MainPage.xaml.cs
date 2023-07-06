@@ -95,6 +95,7 @@ public partial class MainPage : ContentPage
     protected async override void OnDisappearing()
     {
         _ = await mViewModel.Quit(); // despite careful disposing an error is generated on close, which is not captured by AppDomain.Current.UnhandledException
+        
         base.OnDisappearing();
     }
 

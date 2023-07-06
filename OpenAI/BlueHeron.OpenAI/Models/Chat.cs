@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using OpenAI.Chat;
 
@@ -21,7 +22,7 @@ public partial class Chat : ObservableObject
     /// An <see cref="ObservableCollection{ChatMessage}"/>.
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<ChatMessage> _chatMessages = new();
+    private ObservableCollection<ChatMessage> _messages = new();
 
     /// <summary>
     /// Gets or sets a boolean, determining whether this chat is active.
@@ -60,7 +61,7 @@ public partial class Chat : ObservableObject
     /// <returns>An <see cref="IList{Message}"/></returns>
     public IList<Message> AsOpenAIChat()
     {
-        return ChatMessages.Select(c => c.AsOpenAIMessage()).ToList();
+        return Messages.Select(c => c.AsOpenAIMessage()).ToList();
     }
 
     /// <summary>
