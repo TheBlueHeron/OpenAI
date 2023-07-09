@@ -10,7 +10,7 @@
 		<x:Boolean>true</x:Boolean>
 	</NavigationPage.HasBackButton>
 	<NavigationPage.TitleIconImageSource>
-		<FileImageSource File="chat.png" />
+		<FileImageSource File="heron.png" />
 	</NavigationPage.TitleIconImageSource>
 	<NavigationPage.TitleView>
 		<Grid Margin="16,0,0,0"

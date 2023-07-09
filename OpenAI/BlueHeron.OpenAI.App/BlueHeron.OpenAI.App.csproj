@@ -88,6 +88,7 @@
         <None Remove="Resources\App\WideTile.scale-100.png" />
         <None Remove="Resources\App\WideTile.scale-200.png" />
         <None Remove="Resources\App\WideTile.scale-400.png" />
+        <None Remove="Resources\Images\heron.png" />
     </ItemGroup>
 
     <ItemGroup>
