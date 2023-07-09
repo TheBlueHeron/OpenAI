@@ -6,7 +6,7 @@ using OpenAI.Chat;
 namespace BlueHeron.OpenAI.Models;
 
 /// <summary>
-/// Container for a collection of <see cref="ChatMessage"/> objects.
+/// Container for a collection of <see cref="ChatMessage"/> objects that are handled by a specific <see cref="ChatContext"/>.
 /// </summary>
 public partial class Chat : ObservableObject
 {
@@ -19,10 +19,16 @@ public partial class Chat : ObservableObject
     #region Properties
 
     /// <summary>
-    /// An <see cref="ObservableCollection{ChatMessage}"/>.
+    /// The <see cref="ChatContext"/> to use.
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<ChatMessage> _messages = new();
+    private ChatContext _context;
+
+    /// <summary>
+    /// A <see cref="ChatMessageCollection"/>.
+    /// </summary>
+    [ObservableProperty]
+    private ChatMessageCollection _messages = new();
 
     /// <summary>
     /// Gets or sets a boolean, determining whether this chat is active.
@@ -43,17 +49,31 @@ public partial class Chat : ObservableObject
     /// <summary>
     /// Creates a new Chat.
     /// </summary>
-    public Chat() { }
+    /// <param name="context">The <see cref="ChatContext"/> to use</param>
+    public Chat(ChatContext context)
+    {
+        _context = context;
+    }
 
     #endregion
 
     #region Public methods and functions
 
     /// <summary>
+    /// Transforms and adds the given question the the <see cref="Messages"/> collection.
+    /// </summary>
+    /// <param name="question">The user input</param>
+    /// <param name="isSpoken"></param>
+    public void AddQuestion(string question, bool isSpoken)
+    {
+        Messages.AddMessage(new ChatMessage(Context.QuestionHandler.Transform(question), question, ChatMessageType.Question, DateTime.UtcNow, isSpoken));
+    }
+
+    /// <summary>
     /// Returns a default name for a new <see cref="Chat"/>.
     /// </summary>
     /// <returns>A string like 'New chat - 2023-07-01 12:00'.</returns>
-    public static string DefaultName() => $"New chat - {DateTime.UtcNow.ToString(fmtDateTime)}";
+    public static string DefaultName() => $"{ChatContext.Default.Name} - {DateTime.UtcNow.ToString(fmtDateTime)}";
 
     /// <summary>
     /// Returns this chat as an <see cref="IList{Message}"/>.

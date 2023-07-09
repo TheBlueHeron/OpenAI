@@ -10,17 +10,17 @@ public class ChatMessageTemplateSelector : DataTemplateSelector
     #region Properties
 
     /// <summary>
-    /// <see cref="DataTemplate"/> for a <see cref="ChatMessage"/> of type <see cref="MessageType.Answer"/>.
+    /// <see cref="DataTemplate"/> for a <see cref="ChatMessage"/> of type <see cref="ChatMessageType.Answer"/>.
     /// </summary>
     public required DataTemplate AnswerTemplate { get; set; }
 
     /// <summary>
-    /// <see cref="DataTemplate"/> for a <see cref="ChatMessage"/> of type <see cref="MessageType.Question"/>.
+    /// <see cref="DataTemplate"/> for a <see cref="ChatMessage"/> of type <see cref="ChatMessageType.Question"/>.
     /// </summary>
     public required DataTemplate QuestionTemplate { get; set; }
 
     /// <summary>
-    /// <see cref="DataTemplate"/> for a <see cref="ChatMessage"/> of type <see cref="MessageType.System"/>.
+    /// <see cref="DataTemplate"/> for a <see cref="ChatMessage"/> of type <see cref="ChatMessageType.System"/>.
     /// </summary>
     public required DataTemplate SystemTemplate { get; set; }
 
@@ -38,8 +38,8 @@ public class ChatMessageTemplateSelector : DataTemplateSelector
     {
         return ((ChatMessage)item).MessageType switch
         {
-            MessageType.Answer => AnswerTemplate,
-            MessageType.Question => QuestionTemplate,
+            ChatMessageType.Answer => AnswerTemplate,
+            ChatMessageType.Question => QuestionTemplate,
             _ => SystemTemplate,
         };
     }

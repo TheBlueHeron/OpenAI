@@ -5,7 +5,7 @@ namespace BlueHeron.OpenAI;
 /// <summary>
 /// Enumeration of possible types of a <see cref="ChatMessage"/>.
 /// </summary>
-public enum MessageType
+public enum ChatMessageType
 {
     /// <summary>
     /// The message is a question.

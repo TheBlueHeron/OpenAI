@@ -106,7 +106,7 @@ public partial class OpenAIViewModel : ObservableObject
         }
         _chats ??= new()
         {
-            new Chat() { IsActive = true, Title = Chat.DefaultName() }
+            new Chat(ChatContext.Default) { IsActive = true, Title = Chat.DefaultName() }
         };
         ActiveChat = _chats.First(c => c.IsActive);
         mConnector = connector;
@@ -163,7 +163,7 @@ public partial class OpenAIViewModel : ObservableObject
     [RelayCommand]
     private void AddChat()
     {
-        var newChat = new Chat() { IsActive = true, Title = Chat.DefaultName() };
+        var newChat = new Chat(ChatContext.Default) { IsActive = true, Title = Chat.DefaultName() };
         Chats.Add(newChat);
         ActivateChat(newChat);
     }
@@ -177,13 +177,13 @@ public partial class OpenAIViewModel : ObservableObject
     {
         if (ActiveChat.Messages.Count == 0)
         {
-            ActiveChat.Messages.Add(new ChatMessage(ChatMessage.MSG_ASSISTANT, MessageType.System, DateTime.UtcNow, isSpoken));
+            ActiveChat.Messages.AddMessage(new ChatMessage(ActiveChat.Context.Context, ActiveChat.Context.Context, ChatMessageType.System, DateTime.UtcNow, false));
         }
         if (!mSentenceEndings.Contains(Question.Last().ToString()))
         {
             Question += _DOT; // prevent GPT from completing the input
         }
-        ActiveChat.Messages.Add(new ChatMessage(Question, MessageType.Question, DateTime.UtcNow, isSpoken));
+        ActiveChat.AddQuestion(Question, isSpoken);
         ClearQuestion();
 
         await ParseChatResponse(mConnector.Update(ActiveChat), isSpoken);        
@@ -220,7 +220,7 @@ public partial class OpenAIViewModel : ObservableObject
         Chats.Remove(ActiveChat);
         if (!Chats.Any())
         {
-            var newChat = new Chat() { IsActive = true, Title = Chat.DefaultName() };
+            var newChat = new Chat(ChatContext.Default) { IsActive = true, Title = Chat.DefaultName() };
             Chats.Add(newChat);
         }        
         ActivateChat(Chats.First());
@@ -280,7 +280,7 @@ public partial class OpenAIViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Parses the response stream into sentences - speaking them if needed - and adds a <see cref="ChatMessage"/> of type <see cref="MessageType.Answer"/> to the <see cref="ActiveChat"/>.
+    /// Parses the response stream into sentences - speaking them if needed - and adds a <see cref="ChatMessage"/> of type <see cref="ChatMessageType.Answer"/> to the <see cref="ActiveChat"/>.
     /// </summary>
     /// <param name="response">The <see cref="IAsyncEnumerable{String}"/> returned by the <see cref="OpenAIService"/></param>
     /// <param name="isSpoken">The question was raised through speech</param>
@@ -307,8 +307,8 @@ public partial class OpenAIViewModel : ObservableObject
             isFirst = true;
         });
 
-        Answer = new ChatMessage(string.Empty, MessageType.Answer, DateTime.UtcNow, false);
-        ActiveChat.Messages.Add(Answer);
+        Answer = new ChatMessage(string.Empty, string.Empty, ChatMessageType.Answer, DateTime.UtcNow, isSpoken);
+        ActiveChat.Messages.AddMessage(Answer);
 
         await foreach (var t in response)
         {
@@ -386,7 +386,7 @@ public partial class OpenAIViewModel : ObservableObject
     {
         await Task.Run(() =>
         {
-            Answer.Content += t;
+            Answer.DisplayedContent += t;
             Thread.Sleep(_ANSWERUPDATEDELAY);
         });
     }

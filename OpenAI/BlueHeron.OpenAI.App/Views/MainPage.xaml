@@ -25,7 +25,7 @@
 					BackgroundColor="Transparent"
 					HorizontalOptions="Center"
 					VerticalOptions="Center"
-					Clicked="SettingsClicked">
+					Clicked="OnSettingsClicked">
 				<Button.ImageSource>
 					<FontImageSource FontFamily="Segoe MDL2 Assets"
 									 Size="16"
@@ -36,9 +36,21 @@
 		</Grid>
 	</NavigationPage.TitleView>
 	<ContentPage.Resources>
+		<MenuFlyout x:Key="mnuChatMessage">
+			<MenuFlyoutItem Text="Copy"
+                            Clicked="OnCopyMessageClicked">
+				<MenuFlyoutItem.IconImageSource>
+					<FontImageSource FontFamily="Segoe MDL2 Assets"
+						 Size="12"
+						 Color="Black"
+						 Glyph="&#xE711;" />
+				</MenuFlyoutItem.IconImageSource>
+			</MenuFlyoutItem>
+		</MenuFlyout>
 		<DataTemplate x:Key="AnswerTemplate"
 				  x:DataType="mdl:ChatMessage">
-			<Grid Margin="0,0,0,16">
+			<Grid Margin="0,0,0,16"
+				  FlyoutBase.ContextFlyout="{StaticResource mnuChatMessage}">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="64"/>
@@ -77,7 +89,7 @@
 						   FontSize="14"
 						   LineHeight="1.5"
 						   Margin="4,8,4,4"
-						   Text="{Binding Content, Mode=OneWay}"
+						   Text="{Binding DisplayedContent, Mode=OneWay}"
 						   TextColor="DarkBlue"/>
 					</Grid>
 				</Border>
@@ -85,7 +97,8 @@
 		</DataTemplate>
 		<DataTemplate x:Key="QuestionTemplate"
 				  x:DataType="mdl:ChatMessage">
-			<Grid Margin="0,0,0,16">
+			<Grid Margin="0,0,0,16"
+				  FlyoutBase.ContextFlyout="{StaticResource mnuChatMessage}">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="64"/>
 					<ColumnDefinition Width="*"/>
@@ -125,7 +138,7 @@
 						   FontSize="14"
 						   LineHeight="1.25"
 						   Margin="4,8,4,4"
-						   Text="{Binding Content, Mode=OneWay}"
+						   Text="{Binding DisplayedContent, Mode=OneWay}"
 						   TextColor="DarkGreen"/>
 					</Grid>
 				</Border>
@@ -171,7 +184,7 @@
 						   Grid.ColumnSpan="2"
 						   FontSize="14"
 						   Margin="4,8,4,4"
-						   Text="{Binding Content, Mode=OneWay}"
+						   Text="{Binding DisplayedContent, Mode=OneWay}"
 						   TextColor="Gray"/>
 					</Grid>
 				</Border>
@@ -194,7 +207,7 @@
 				ItemsSource="{Binding Chats, Mode=OneWay}"
 				ItemDisplayBinding="{Binding Title}"
 				SelectedItem="{Binding ActiveChat}"
-				SelectedIndexChanged="ChatSelected">
+				SelectedIndexChanged="OnChatSelected">
 			</Picker>
 			<Button Grid.Column="1"
 				Command="{Binding DeleteChatCommand}"
@@ -246,7 +259,7 @@
 		   HorizontalOptions="Fill"
 		   Margin="0,0,0,8"
 		   Text="{Binding Question, Mode=TwoWay}"
-		   Completed="QuestionCompleted" />
+		   Completed="OnQuestionCompleted" />
 		<Grid Grid.Row="3"
 		  ColumnDefinitions="*,Auto,Auto,Auto"
 		  HorizontalOptions="Fill">

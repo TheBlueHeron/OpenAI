@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using BlueHeron.OpenAI.Models;
+using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
 
 namespace BlueHeron.OpenAI.Views;
 
@@ -10,7 +12,18 @@ public partial class MainPage : ContentPage
 {
     #region Objects and variables
 
+    private const string _COPIED = "Message copied!";
+
     private readonly OpenAIViewModel mViewModel;
+
+    private readonly SnackbarOptions successOptions = new()
+    {
+        BackgroundColor = Colors.Green,
+        TextColor = Colors.White,
+        CornerRadius = new CornerRadius(8),
+        Font = Microsoft.Maui.Font.SystemFontOfSize(14),
+        CharacterSpacing = 0.5
+    };
 
     #endregion
 
@@ -29,13 +42,9 @@ public partial class MainPage : ContentPage
         stack.SizeChanged += OnStackHeightChanged;
     }
 
-    /// <summary>
-    /// Ensures that the last message is fully visible when added or modified.
-    /// </summary>
-    private async void OnStackHeightChanged(object? sender, EventArgs e)
-    {
-        await svw.ScrollToAsync(stack, ScrollToPosition.End, false);
-    }
+    #endregion
+
+    #region Events
 
     /// <summary>
     /// Displays an alert message if needed.
@@ -45,23 +54,6 @@ public partial class MainPage : ContentPage
         if (sender is OpenAIViewModel vm && e.PropertyName == nameof(OpenAIViewModel.Alert) && !string.IsNullOrEmpty(vm.Alert))
         {
             DisplayAlert("Warning", vm.Alert, "Dismiss", FlowDirection.MatchParent);
-        }
-    }
-
-    #endregion
-
-    #region Events
-
-    /// <summary>
-    /// Activates the selected <see cref="Chat"/>.
-    /// </summary>
-    /// <param name="sender">The <see cref="Picker"/></param>
-    /// <param name="e"><see cref="EventArgs"/>, unused</param>
-    private void ChatSelected(object sender, EventArgs e)
-    {
-        if (IsLoaded)
-        {
-            mViewModel.ActivateChat((Chat)((Picker)sender).SelectedItem);
         }
     }
 
@@ -82,11 +74,28 @@ public partial class MainPage : ContentPage
     }
 
     /// <summary>
-    /// Executes the <see cref="OpenAIViewModel.AnswerQuestionCommand"/>.
+    /// Activates the selected <see cref="Chat"/>.
     /// </summary>
-    private void QuestionCompleted(object sender, EventArgs e)
+    private void OnChatSelected(object sender, EventArgs e)
     {
-        mViewModel.AnswerQuestionCommand.Execute(false);
+        if (IsLoaded)
+        {
+            mViewModel.ActivateChat((Chat)((Picker)sender).SelectedItem);
+        }
+    }
+
+    /// <summary>
+    /// Copies the selected <see cref="ChatMessage"/>'s <see cref="ChatMessage.DisplayedContent"/> to the clipboard and notifies the user.
+    /// </summary>
+    private async void OnCopyMessageClicked(object sender, EventArgs e)
+    {
+        var mnuItem = (MenuFlyoutItem)sender;
+
+        if (mnuItem.BindingContext is ChatMessage msg)
+        {
+            await Clipboard.Default.SetTextAsync(msg.DisplayedContent);
+            await ((VisualElement)((MenuFlyout)mnuItem.Parent).Parent).DisplaySnackbar(_COPIED, duration:TimeSpan.FromSeconds(3), visualOptions: successOptions);
+        }
     }
 
     /// <summary>
@@ -95,13 +104,32 @@ public partial class MainPage : ContentPage
     protected async override void OnDisappearing()
     {
         _ = await mViewModel.Quit(); // despite careful disposing an error is generated on close, which is not captured by AppDomain.Current.UnhandledException
-        
+
         base.OnDisappearing();
     }
 
-    private void SettingsClicked(object sender, EventArgs e)
+    /// <summary>
+    /// Executes the <see cref="OpenAIViewModel.AnswerQuestionCommand"/>.
+    /// </summary>
+    private void OnQuestionCompleted(object sender, EventArgs e)
+    {
+        mViewModel.AnswerQuestionCommand.Execute(false);
+    }
+
+    /// <summary>
+    /// Display settings (TODO: page / popup?).
+    /// </summary>
+    private void OnSettingsClicked(object sender, EventArgs e)
     {
         //
+    }
+
+    /// <summary>
+    /// Ensures that the last message is fully visible when added or modified.
+    /// </summary>
+    private async void OnStackHeightChanged(object? sender, EventArgs e)
+    {
+        await svw.ScrollToAsync(stack, ScrollToPosition.End, false);
     }
 
     #endregion

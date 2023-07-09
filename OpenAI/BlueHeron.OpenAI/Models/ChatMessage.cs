@@ -18,10 +18,16 @@ public partial class ChatMessage : ObservableObject
     #region Properties
 
     /// <summary>
-    /// The contents of the message.
+    /// The actual contents of the message, i.e. the contents that are posted to the OpenAI API.
     /// </summary>
     [ObservableProperty]
-    private string _content;
+    private string _actualContent;
+
+    /// <summary>
+    /// The displayed contents of the message.
+    /// </summary>
+    [ObservableProperty]
+    private string _displayedContent;
 
     /// <summary>
     /// Gets or sets a boolean, determining whether this message was or must be spoken.
@@ -30,13 +36,13 @@ public partial class ChatMessage : ObservableObject
     private bool _isSpoken;
 
     /// <summary>
-    /// The <see cref="OpenAI.MessageType"/> of the message.
+    /// The <see cref="OpenAI.ChatMessageType"/> of the message.
     /// </summary>
     [ObservableProperty]
-    private MessageType _messageType;
+    private ChatMessageType _messageType;
 
     /// <summary>
-    /// The <see cref="Content"/>, separated into sentences.
+    /// The <see cref="DisplayedContent"/>, separated into sentences.
     /// </summary>
     [ObservableProperty()]
     private List<string> _sentences;
@@ -61,13 +67,15 @@ public partial class ChatMessage : ObservableObject
     /// <summary>
     /// Creates a new ChatMessage.
     /// </summary>
-    /// <param name="content">The contents of the message</param>
-    /// <param name="messageType">The <see cref="OpenAI.MessageType"/> of the message</param>
+    /// <param name="actualContent">The actual contents of the message, i.e. the contents that are posted to the OpenAI API</param>
+    /// <param name="displayedContent">The displayed contents of the message</param>
+    /// <param name="messageType">The <see cref="OpenAI.ChatMessageType"/> of the message</param>
     /// <param name="timeStampUTC">The date time this message was posted, as UTC time</param>
     /// <param name="isSpoken">A boolean, determining whether this message was or must be spoken</param>
-    public ChatMessage(string content, MessageType messageType, DateTime timeStampUTC, bool isSpoken)
+    public ChatMessage(string actualContent, string displayedContent, ChatMessageType messageType, DateTime timeStampUTC, bool isSpoken)
     {
-        _content = content;
+        _actualContent = actualContent;
+        _displayedContent = displayedContent;
         _messageType = messageType;
         _timeStampUTC = timeStampUTC;
         _timeStamp = _timeStampUTC.ToLocalTime();
@@ -80,16 +88,16 @@ public partial class ChatMessage : ObservableObject
     #region Public methods and functions
 
     /// <summary>
-    /// Returns this message as a <see cref="Message"/>.
+    /// Returns this <see cref="ChatMessage"/> as a <see cref="Message"/>, based on its <see cref="ChatMessage.ActualContent"/>.
     /// </summary>
     /// <returns>A <see cref="Message"/></returns>
     public Message AsOpenAIMessage()
     {
-        return MessageType == MessageType.Question ? 
-            new Message(Role.User, Content) :
-            MessageType == MessageType.Answer ?
-                new Message(Role.Assistant, Content) :
-                new Message(Role.System, Content);
+        return MessageType == ChatMessageType.Question ? 
+            new Message(Role.User, ActualContent) :
+            MessageType == ChatMessageType.Answer ?
+                new Message(Role.Assistant, ActualContent) :
+                new Message(Role.System, ActualContent);
     }
 
     /// <summary>
@@ -97,7 +105,7 @@ public partial class ChatMessage : ObservableObject
     /// </summary>
     public override string ToString()
     {
-        return $"{TimeStampUTC} - {MessageType} - {Content}";
+        return $"{TimeStampUTC} - {MessageType} - {DisplayedContent}";
     }
 
     #endregion

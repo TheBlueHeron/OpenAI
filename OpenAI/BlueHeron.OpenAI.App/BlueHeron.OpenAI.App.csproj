@@ -32,7 +32,7 @@
         <!-- Minimum Target OS Version for Windows Platform -->
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
         <DefaultLanguage>en-US</DefaultLanguage>
-        <PackageCertificateThumbprint>419EC99EA6BEDBFAE75F331D8FC0F34A1D3A5747</PackageCertificateThumbprint>
+        <PackageCertificateThumbprint>F9E8C925B7988ED7EC18A379A9C1932034AFC749</PackageCertificateThumbprint>
         <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
         <Title>OpenAI Playground</Title>
         <PackageIcon>SmallTile.scale-200.png</PackageIcon>
