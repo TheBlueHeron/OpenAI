@@ -13,7 +13,7 @@ public partial class OpenAIViewModel : ObservableObject
     #region Objects and variables
 
     private const int _ANSWERUPDATEDELAY = 25; // enhance the effect of 'live writing' of the answer
-    private const string _CHATSFILE = "chats.json";
+    private const string _CHATSFILE = "chats.dat";
     private const string _DEFAULTCULTURE = "en-us";
     private const string _DOT = ".";
     private const string _MIC = "No microphone access!";
@@ -46,6 +46,12 @@ public partial class OpenAIViewModel : ObservableObject
     /// </summary>
     [ObservableProperty()]
     private ChatMessage _answer;
+
+    /// <summary>
+    /// The <see cref="ChatContextCollection"/> with <see cref="ChatContext"/>s, available for the current user.
+    /// </summary>
+    [ObservableProperty()]
+    private ChatContextCollection _availableContexts = new();
 
     /// <summary>
     /// Gets the <see cref="ChatCollection"/>.
@@ -88,7 +94,7 @@ public partial class OpenAIViewModel : ObservableObject
     #region Construction
 
     /// <summary>
-    /// Creates a new <see cref="OpenAIViewModel"/>
+    /// Creates a new <see cref="OpenAIViewModel"/> and deserializes stored chats, if present.
     /// </summary>
     /// <param name="connector">The <see cref="OpenAIService"/> to use</param>
     /// <param name="speech">The <see cref="ISpeechToText"/> to use</param>
@@ -100,7 +106,7 @@ public partial class OpenAIViewModel : ObservableObject
         {
             try
             {
-                _chats = ChatCollection.FromJson(File.ReadAllText(path));
+                _chats = ChatCollection.FromJson(Compressor.Decrypt(Compressor.Decompress(File.ReadAllBytes(path))));
             }
             catch { } // ignore
         }
@@ -139,14 +145,14 @@ public partial class OpenAIViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Cleans up resources.
+    /// Stores the <see cref="Chats"/> and cleans up resources.
     /// </summary>
     public async Task<bool> Quit()
     {
         mTokenSource?.Dispose();
         try
         {
-            File.WriteAllText(Path.Combine(FileSystem.Current.AppDataDirectory, _CHATSFILE), Chats.ToJson());
+            File.WriteAllBytes(Path.Combine(FileSystem.Current.AppDataDirectory, _CHATSFILE), Compressor.Compress(Compressor.Encrypt(Chats.ToJson())));
         }
         catch { } // ignore
 
@@ -186,7 +192,7 @@ public partial class OpenAIViewModel : ObservableObject
         ActiveChat.AddQuestion(Question, isSpoken);
         ClearQuestion();
 
-        await ParseChatResponse(mConnector.Update(ActiveChat), isSpoken);        
+        await ParseChatResponse(mConnector.Update(ActiveChat), isSpoken);
     }
 
     /// <summary>
@@ -295,6 +301,7 @@ public partial class OpenAIViewModel : ObservableObject
         var isFirst = true;
         bool mustAddSpace;
         var curIndex = -1;
+        string actualContent;
         var handleSentence = new Action(() => 
          {
              Answer.Sentences.Add(currentSentence);
@@ -308,9 +315,10 @@ public partial class OpenAIViewModel : ObservableObject
         });
 
         Answer = new ChatMessage(string.Empty, string.Empty, ChatMessageType.Answer, DateTime.UtcNow, isSpoken);
+        Answer.IsUpdating = true;
         ActiveChat.Messages.AddMessage(Answer);
 
-        await foreach (var t in response)
+        await foreach (var t in ActiveChat.Context.AnswerHandler.Transform(response, out actualContent))
         {
             if (!string.IsNullOrEmpty(t))
             {
@@ -346,7 +354,9 @@ public partial class OpenAIViewModel : ObservableObject
         {
             handleSentence();
         }
+        Answer.ActualContent = actualContent?? Answer.DisplayedContent;
         Answer.TimeStampUTC = DateTime.UtcNow;
+        Answer.IsUpdating = false;
     }
 
     #endregion

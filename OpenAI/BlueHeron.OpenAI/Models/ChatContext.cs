@@ -13,6 +13,11 @@ public partial class ChatContext : ObservableObject
 {
     #region Objects and variables
 
+    /// <summary>
+    /// The default <see cref="ChatContext"/>.
+    /// </summary>
+    private static ChatContext mDefault;
+
     private const string _DEFAULTNAME = "Assistant";
 
     #endregion
@@ -23,20 +28,7 @@ public partial class ChatContext : ObservableObject
     /// The <see cref="IAnswerHandler"/> to use.
     /// </summary>
     [ObservableProperty]
-    [property: JsonIgnore()]
     private IAnswerHandler _answerHandler;
-
-    /// <summary>
-    /// Returns a default <see cref="ChatContext"/>.
-    /// </summary>
-    [JsonIgnore()]
-    public static ChatContext Default => new() { AnswerHandler = IAnswerHandler.Default, QuestionHandler = IQuestionHandler.Default };
-
-    /// <summary>
-    /// The name of this context.
-    /// </summary>
-    [ObservableProperty]
-    private string _name;
 
     /// <summary>
     /// The content of the first <see cref="ChatMessageType.System"/> message in the <see cref="Chat"/>.
@@ -46,10 +38,38 @@ public partial class ChatContext : ObservableObject
     private string _context;
 
     /// <summary>
+    /// Returns a default <see cref="ChatContext"/>.
+    /// </summary>
+    public static ChatContext Default
+    {
+        get
+        {
+            if (mDefault == null)
+            {
+                mDefault = new ChatContext();
+                mDefault.AnswerHandler = IAnswerHandler.Default(mDefault);
+                mDefault.QuestionHandler = IQuestionHandler.Default(mDefault);
+            }
+            return mDefault;
+        }
+    }
+
+    /// <summary>
+    /// The name of this context.
+    /// </summary>
+    [ObservableProperty]
+    private string _name;
+
+    /// <summary>
+    /// Dictionary of custom parameters needed by this context.
+    /// </summary>
+    [ObservableProperty]
+    private Dictionary<string, string> _parameters = new();
+
+    /// <summary>
     /// The <see cref="IQuestionHandler"/> to use.
     /// </summary>
     [ObservableProperty]
-    [property: JsonIgnore()]
     private IQuestionHandler _questionHandler;
 
     #endregion

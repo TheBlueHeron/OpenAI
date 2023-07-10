@@ -41,14 +41,14 @@
                             Clicked="OnCopyMessageClicked">
 				<MenuFlyoutItem.IconImageSource>
 					<FontImageSource FontFamily="Segoe MDL2 Assets"
-						 Size="12"
-						 Color="Black"
-						 Glyph="&#xE711;" />
+									 Size="12"
+									 Color="Black"
+									 Glyph="&#xE711;" />
 				</MenuFlyoutItem.IconImageSource>
 			</MenuFlyoutItem>
 		</MenuFlyout>
 		<DataTemplate x:Key="AnswerTemplate"
-				  x:DataType="mdl:ChatMessage">
+					  x:DataType="mdl:ChatMessage">
 			<Grid Margin="0,0,0,16"
 				  FlyoutBase.ContextFlyout="{StaticResource mnuChatMessage}">
 				<Grid.ColumnDefinitions>
@@ -56,10 +56,10 @@
 					<ColumnDefinition Width="64"/>
 				</Grid.ColumnDefinitions>
 				<Border Background="#fff7f7ff"
-					Margin="0,0,16,0"
-					Padding="4"
-					StrokeThickness="0.2"
-					StrokeShape="RoundRectangle 8">
+						Margin="0,0,16,0"
+						Padding="4"
+						StrokeThickness="0.2"
+						StrokeShape="RoundRectangle 8">
 					<Border.Shadow>
 						<Shadow Offset="8,8"
 							Brush="#888"
@@ -72,31 +72,36 @@
 							<RowDefinition Height="*"/>
 						</Grid.RowDefinitions>
 						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="1,*"/>
-							<ColumnDefinition Width="1,*"/>
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="*"/>
 						</Grid.ColumnDefinitions>
-						<Label Text="{Binding MessageType, Mode=OneTime}"
-						   TextColor="Gray"
-						   FontAttributes="Italic"
-						   FontSize="12"/>
+						<Image Source="loading.gif"
+							   Margin="0,0,16,0"
+							   IsVisible="{Binding IsUpdating}"/>
 						<Label Grid.Column="1"
-						   Text="{Binding TimeStamp, Mode=OneTime}"
-						   TextColor="Gray"
-						   FontSize="10"
-						   HorizontalTextAlignment="End"/>
+							   Text="{Binding MessageType, Mode=OneTime}"
+							   TextColor="Gray"
+							   FontAttributes="Italic"
+							   FontSize="12"/>
+						<Label Grid.Column="2"
+							   Text="{Binding TimeStamp, Mode=OneWay}"
+							   TextColor="Gray"
+							   FontSize="10"
+							   HorizontalTextAlignment="End"/>
 						<Label Grid.Row="1"
-						   Grid.ColumnSpan="2"
-						   FontSize="14"
-						   LineHeight="1.5"
-						   Margin="4,8,4,4"
-						   Text="{Binding DisplayedContent, Mode=OneWay}"
-						   TextColor="DarkBlue"/>
+							   Grid.ColumnSpan="3"
+							   FontSize="14"
+							   LineHeight="1.5"
+							   Margin="4,8,4,4"
+							   Text="{Binding DisplayedContent, Mode=OneWay}"
+							   TextColor="DarkBlue"/>
 					</Grid>
 				</Border>
 			</Grid>
 		</DataTemplate>
 		<DataTemplate x:Key="QuestionTemplate"
-				  x:DataType="mdl:ChatMessage">
+					  x:DataType="mdl:ChatMessage">
 			<Grid Margin="0,0,0,16"
 				  FlyoutBase.ContextFlyout="{StaticResource mnuChatMessage}">
 				<Grid.ColumnDefinitions>
@@ -104,16 +109,16 @@
 					<ColumnDefinition Width="*"/>
 				</Grid.ColumnDefinitions>
 				<Border Grid.Column="1"
-					Background="#fffc"
-					Margin="0,0,16,0"
-					Padding="4"
-					StrokeThickness="0.2"
-					StrokeShape="RoundRectangle 8">
+						Background="#fffc"
+						Margin="0,0,16,0"
+						Padding="4"
+						StrokeThickness="0.2"
+						StrokeShape="RoundRectangle 8">
 					<Border.Shadow>
 						<Shadow Offset="8,8"
-							Brush="#888"
-							Radius="8"
-							Opacity="0.8"/>
+								Brush="#888"
+								Radius="8"
+								Opacity="0.8"/>
 					</Border.Shadow>
 					<Grid>
 						<Grid.RowDefinitions>
@@ -125,42 +130,42 @@
 							<ColumnDefinition Width="1,*"/>
 						</Grid.ColumnDefinitions>
 						<Label Text="{Binding MessageType, Mode=OneTime}"
-						   TextColor="Gray"
-						   FontAttributes="Italic"
-						   FontSize="12"/>
+							   TextColor="Gray"
+							   FontAttributes="Italic"
+							   FontSize="12"/>
 						<Label Grid.Column="1"
-						   Text="{Binding TimeStamp, Mode=OneTime}"
-						   TextColor="Gray"
-						   FontSize="10"
-						   HorizontalTextAlignment="End"/>
+							   Text="{Binding TimeStamp, Mode=OneTime}"
+							   TextColor="Gray"
+							   FontSize="10"
+							   HorizontalTextAlignment="End"/>
 						<Label Grid.Row="1"
-						   Grid.ColumnSpan="2"
-						   FontSize="14"
-						   LineHeight="1.25"
-						   Margin="4,8,4,4"
-						   Text="{Binding DisplayedContent, Mode=OneWay}"
-						   TextColor="DarkGreen"/>
+							   Grid.ColumnSpan="2"
+							   FontSize="14"
+							   LineHeight="1.25"
+							   Margin="4,8,4,4"
+							   Text="{Binding DisplayedContent, Mode=OneWay}"
+							   TextColor="DarkGreen"/>
 					</Grid>
 				</Border>
 			</Grid>
 		</DataTemplate>
 		<DataTemplate x:Key="SystemTemplate"
-				  x:DataType="mdl:ChatMessage">
+					  x:DataType="mdl:ChatMessage">
 			<Grid Margin="0,0,0,16">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="64"/>
 				</Grid.ColumnDefinitions>
 				<Border Background="#fddd"
-					Margin="0,0,16,0"
-					Padding="8"
-					StrokeThickness="0.2"
-					StrokeShape="RoundRectangle 8">
+						Margin="0,0,16,0"
+						Padding="8"
+						StrokeThickness="0.2"
+						StrokeShape="RoundRectangle 8">
 					<Border.Shadow>
 						<Shadow Offset="8,8"
-							Brush="#888"
-							Radius="8"
-							Opacity="0.8"/>
+								Brush="#888"
+								Radius="8"
+								Opacity="0.8"/>
 					</Border.Shadow>
 					<Grid>
 						<Grid.RowDefinitions>
@@ -172,168 +177,168 @@
 							<ColumnDefinition Width="1,*"/>
 						</Grid.ColumnDefinitions>
 						<Label Text="{Binding MessageType, Mode=OneTime}"
-						   TextColor="Gray"
-						   FontAttributes="Italic"
-						   FontSize="12"/>
+							   TextColor="Gray"
+							   FontAttributes="Italic"
+							   FontSize="12"/>
 						<Label Grid.Column="1"
-						   Text="{Binding TimeStamp, Mode=OneTime}"
-						   TextColor="Gray"
-						   FontSize="10"
-						   HorizontalTextAlignment="End"/>
+							   Text="{Binding TimeStamp, Mode=OneTime}"
+							   TextColor="Gray"
+							   FontSize="10"
+							   HorizontalTextAlignment="End"/>
 						<Label Grid.Row="1"
-						   Grid.ColumnSpan="2"
-						   FontSize="14"
-						   Margin="4,8,4,4"
-						   Text="{Binding DisplayedContent, Mode=OneWay}"
-						   TextColor="Gray"/>
+							   Grid.ColumnSpan="2"
+							   FontSize="14"
+							   Margin="4,8,4,4"
+							   Text="{Binding DisplayedContent, Mode=OneWay}"
+							   TextColor="Gray"/>
 					</Grid>
 				</Border>
 			</Grid>
 		</DataTemplate>
-		<ctrl:ChatMessageTemplateSelector x:Key="ChatMessageTemplateSelector" 
-									  AnswerTemplate="{StaticResource AnswerTemplate}"
-									  QuestionTemplate="{StaticResource QuestionTemplate}"
-									  SystemTemplate="{StaticResource SystemTemplate}"/>
+		<ctrl:ChatMessageTemplateSelector x:Key="ChatMessageTemplateSelector"
+										  AnswerTemplate="{StaticResource AnswerTemplate}"
+										  QuestionTemplate="{StaticResource QuestionTemplate}"
+										  SystemTemplate="{StaticResource SystemTemplate}"/>
 	</ContentPage.Resources>
 	<Grid x:Name="grdMain"
-	  RowDefinitions="Auto,*,Auto,Auto"
-	  Padding="24,24,24,12"
-	  HorizontalOptions="Fill"
-	  VerticalOptions="Fill">
+		  RowDefinitions="Auto,*,Auto,Auto"
+		  Padding="24,24,24,12"
+		  HorizontalOptions="Fill"
+		  VerticalOptions="Fill">
 		<Grid ColumnDefinitions="*,Auto,Auto">
 			<Picker x:Name="cboChats"
-				HorizontalOptions="Fill"
-				HorizontalTextAlignment="Start"
-				ItemsSource="{Binding Chats, Mode=OneWay}"
-				ItemDisplayBinding="{Binding Title}"
-				SelectedItem="{Binding ActiveChat}"
-				SelectedIndexChanged="OnChatSelected">
+					HorizontalOptions="Fill"
+					HorizontalTextAlignment="Start"
+					ItemsSource="{Binding Chats, Mode=OneWay}"
+					ItemDisplayBinding="{Binding Title}"
+					SelectedItem="{Binding ActiveChat}"
+					SelectedIndexChanged="OnChatSelected">
 			</Picker>
 			<Button Grid.Column="1"
-				Command="{Binding DeleteChatCommand}"
-				VerticalOptions="Center"
-				Margin="2,0,0,0"
-				HeightRequest="36"
-				WidthRequest="40"
-				SemanticProperties.Hint="Deletes the current chat from the collection."
-				Style="{StaticResource PrimaryAction}">
+					Command="{Binding DeleteChatCommand}"
+					VerticalOptions="Center"
+					Margin="2,0,0,0"
+					HeightRequest="36"
+					WidthRequest="40"
+					SemanticProperties.Hint="Deletes the current chat from the collection."
+					Style="{StaticResource PrimaryAction}">
 				<Button.ImageSource>
 					<FontImageSource FontFamily="Segoe MDL2 Assets"
-								 Size="12"
-								 Color="White"
-								 Glyph="&#xE711;" />
+									 Size="12"
+									 Color="White"
+									 Glyph="&#xE711;" />
 				</Button.ImageSource>
 			</Button>
 			<Button Grid.Column="2"
-				Command="{Binding AddChatCommand}"
-				VerticalOptions="Center"
-				Margin="2,0,0,0"
-				HeightRequest="36"
-				WidthRequest="40"
-				SemanticProperties.Hint="Add a new chat to the collection."
-				Style="{StaticResource PrimaryAction}">
+					Command="{Binding AddChatCommand}"
+					VerticalOptions="Center"
+					Margin="2,0,0,0"
+					HeightRequest="36"
+					WidthRequest="40"
+					SemanticProperties.Hint="Add a new chat to the collection."
+					Style="{StaticResource PrimaryAction}">
 				<Button.ImageSource>
 					<FontImageSource FontFamily="Segoe MDL2 Assets"
-								 Size="12"
-								 Color="White"
-								 Glyph="&#xE710;" />
+									 Size="12"
+									 Color="White"
+									 Glyph="&#xE710;" />
 				</Button.ImageSource>
 			</Button>
 		</Grid>
 		<Border x:Name="brdChat"
-			Grid.Row="1"
-			StrokeThickness="0"
-			Margin="0,4">
+				Grid.Row="1"
+				StrokeThickness="0"
+				Margin="0,4">
 			<ScrollView x:Name="svw">
 				<StackLayout x:Name="stack"
-						 Orientation="Vertical"
-						 BindableLayout.ItemsSource="{Binding ActiveChat.Messages, Mode=OneWay}"
-						 BindableLayout.ItemTemplateSelector="{StaticResource ChatMessageTemplateSelector}">
+							 Orientation="Vertical"
+							 BindableLayout.ItemsSource="{Binding ActiveChat.Messages, Mode=OneWay}"
+							 BindableLayout.ItemTemplateSelector="{StaticResource ChatMessageTemplateSelector}">
 				</StackLayout>
 			</ScrollView>
 		</Border>
 		<Entry x:Name="txtQuestion"
-		   Grid.Row="2"
-		   FontSize="15"
-		   HeightRequest="36"
-		   HorizontalOptions="Fill"
-		   Margin="0,0,0,8"
-		   Text="{Binding Question, Mode=TwoWay}"
-		   Completed="OnQuestionCompleted" />
+			   Grid.Row="2"
+			   FontSize="15"
+			   HeightRequest="36"
+			   HorizontalOptions="Fill"
+			   Margin="0,0,0,8"
+			   Text="{Binding Question, Mode=TwoWay}"
+			   Completed="OnQuestionCompleted" />
 		<Grid Grid.Row="3"
-		  ColumnDefinitions="*,Auto,Auto,Auto"
-		  HorizontalOptions="Fill">
+			  ColumnDefinitions="*,Auto,Auto,Auto"
+			  HorizontalOptions="Fill">
 			<Label FontSize="12"
-			   TextColor="Gray"
-			   HorizontalOptions="Start"
-			   VerticalOptions="Center"
-			   SemanticProperties.Description="Speech status"
-			   SemanticProperties.HeadingLevel="Level2"
-			   Style="{StaticResource MauiLabel}"
-			   Text="{Binding State, Mode=OneWay}" />
+				   TextColor="Gray"
+				   HorizontalOptions="Start"
+				   VerticalOptions="Center"
+				   SemanticProperties.Description="Speech status"
+				   SemanticProperties.HeadingLevel="Level2"
+				   Style="{StaticResource MauiLabel}"
+				   Text="{Binding State, Mode=OneWay}" />
 			<Button Grid.Column="1"
-				Command="{Binding ClearQuestionCommand}"
-				HorizontalOptions="Center"
-				VerticalOptions="Center"
-				HeightRequest="40"
-				WidthRequest="48"
-				SemanticProperties.Hint="Clear the current question."
-				Style="{StaticResource PrimaryAction}">
+					Command="{Binding ClearQuestionCommand}"
+					HorizontalOptions="Center"
+					VerticalOptions="Center"
+					HeightRequest="40"
+					WidthRequest="48"
+					SemanticProperties.Hint="Clear the current question."
+					Style="{StaticResource PrimaryAction}">
 				<Button.ImageSource>
 					<FontImageSource FontFamily="Segoe MDL2 Assets"
-								 Size="16"
-								 Color="White"
-								 Glyph="&#xE711;" />
+									 Size="16"
+									 Color="White"
+									 Glyph="&#xE711;" />
 				</Button.ImageSource>
 			</Button>
 			<Button Grid.Column="2"
-				Command="{Binding ListenCommand}"
-				HorizontalOptions="Center"
-				VerticalOptions="Center"
-				HeightRequest="40"
-				WidthRequest="48"
-				SemanticProperties.Hint="Start listening."
-				Style="{StaticResource PrimaryAction}"
-				IsVisible="{Binding IsReadyToListen, Mode=OneWay}">
+					Command="{Binding ListenCommand}"
+					HorizontalOptions="Center"
+					VerticalOptions="Center"
+					HeightRequest="40"
+					WidthRequest="48"
+					SemanticProperties.Hint="Start listening."
+					Style="{StaticResource PrimaryAction}"
+					IsVisible="{Binding IsReadyToListen, Mode=OneWay}">
 				<Button.ImageSource>
 					<FontImageSource FontFamily="Segoe MDL2 Assets"
-								 Size="16"
-								 Color="White"
-								 Glyph="&#xE720;" />
+									 Size="16"
+									 Color="White"
+									 Glyph="&#xE720;" />
 				</Button.ImageSource>
 			</Button>
 			<Button Grid.Column="2"
-				Command="{Binding ListenCancelCommand}"
-				HorizontalOptions="Center"
-				VerticalOptions="Center"
-				HeightRequest="40"
-				WidthRequest="48"
-				SemanticProperties.Hint="Stop listening."
-				Style="{StaticResource PrimaryAction}"
-				IsVisible="{Binding IsListening, Mode=OneWay}">
+					Command="{Binding ListenCancelCommand}"
+					HorizontalOptions="Center"
+					VerticalOptions="Center"
+					HeightRequest="40"
+					WidthRequest="48"
+					SemanticProperties.Hint="Stop listening."
+					Style="{StaticResource PrimaryAction}"
+					IsVisible="{Binding IsListening, Mode=OneWay}">
 				<Button.ImageSource>
 					<FontImageSource FontFamily="Segoe MDL2 Assets"
-								 Size="16"
-								 Color="White"
-								 Glyph="&#xE74F;" />
+									 Size="16"
+									 Color="White"
+									 Glyph="&#xE74F;" />
 				</Button.ImageSource>
 			</Button>
 			<Button Grid.Column="3"
-				Command="{Binding AnswerQuestionCommand}"
-				HorizontalOptions="Center"
-				VerticalOptions="Center"
-				HeightRequest="40"
-				WidthRequest="48"
-				SemanticProperties.Hint="Answer the question."
-				Style="{StaticResource PrimaryAction}">
+					Command="{Binding AnswerQuestionCommand}"
+					HorizontalOptions="Center"
+					VerticalOptions="Center"
+					HeightRequest="40"
+					WidthRequest="48"
+					SemanticProperties.Hint="Answer the question."
+					Style="{StaticResource PrimaryAction}">
 				<Button.CommandParameter>
 					<x:Boolean>true</x:Boolean>
 				</Button.CommandParameter>
 				<Button.ImageSource>
 					<FontImageSource FontFamily="Segoe MDL2 Assets"
-								 Size="16"
-								 Color="White"
-								 Glyph="&#xE8FB;" />
+									 Size="16"
+									 Color="White"
+									 Glyph="&#xE8FB;" />
 				</Button.ImageSource>
 			</Button>
 		</Grid>

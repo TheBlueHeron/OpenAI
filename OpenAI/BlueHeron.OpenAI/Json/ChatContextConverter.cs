@@ -16,6 +16,7 @@ public class ChatContextConverter : JsonConverter<ChatContext>
     private const string PROPANSWERHANDLER = "AnswerHandler";
     private const string PROPCONTEXT = "Context";
     private const string PROPNAME = "Name";
+    private const string PROPPARAMS = "Parameters";
     private const string PROPQUESTIONHANDLER = "QuestionHandler";
 
     #endregion
@@ -33,31 +34,52 @@ public class ChatContextConverter : JsonConverter<ChatContext>
         var context = string.Empty;
         var answerHandlerTypeName = string.Empty;
         var questionHandlerTypeName = string.Empty;
+        var parameters = new Dictionary<string, string>();
 
         while (reader.Read()) {
             if (reader.TokenType == JsonTokenType.PropertyName)
             {
                 var propertyName = reader.GetString();
                 reader.Read();
-                var value = reader.GetString();
-
-                switch (propertyName)
+                if (reader.TokenType == JsonTokenType.StartArray) // Parameters array
                 {
-                    case PROPNAME:
-                        name = value;       
-                        break;
-                    case PROPCONTEXT:
-                        context = value;
-                        break;
-                    case PROPANSWERHANDLER:
-                        answerHandlerTypeName = value;
-                        break;
-                    case PROPQUESTIONHANDLER:
-                        questionHandlerTypeName = value;
-                        break;
+                    while (reader.Read()) // read key-value pairs
+                    {
+                        if (reader.TokenType == JsonTokenType.PropertyName)
+                        {
+                            var k = reader.GetString();
+                            reader.Read();
+                            var v = reader.GetString();
+                            parameters.Add(k, v);
+                        }
+                        if (reader.TokenType == JsonTokenType.EndArray) //  finished reading Parameters array
+                        {
+                            break;
+                        }
+                    }
+                }
+                else // string properties
+                {
+                    var value = reader.GetString();
+
+                    switch (propertyName)
+                    {
+                        case PROPNAME:
+                            name = value;
+                            break;
+                        case PROPCONTEXT:
+                            context = value;
+                            break;
+                        case PROPANSWERHANDLER:
+                            answerHandlerTypeName = value;
+                            break;
+                        case PROPQUESTIONHANDLER:
+                            questionHandlerTypeName = value;
+                            break;
+                    }
                 }
             }
-            if (reader.TokenType == JsonTokenType.EndObject) //  finished reading fields
+            if (reader.TokenType == JsonTokenType.EndObject) //  finished reading ChatContext object
             {
                 break;
             }
@@ -66,7 +88,16 @@ public class ChatContextConverter : JsonConverter<ChatContext>
         {
             throw new JsonException(_errDeserialize);
         }
-        return new ChatContext(name, context) { AnswerHandler = (Interfaces.IAnswerHandler)Activator.CreateInstance(Type.GetType(answerHandlerTypeName)), QuestionHandler = (Interfaces.IQuestionHandler)Activator.CreateInstance(Type.GetType(questionHandlerTypeName)) };
+        var ctx = new ChatContext(name, context);
+        var answerHandler = (Interfaces.IAnswerHandler)Activator.CreateInstance(Type.GetType(answerHandlerTypeName));
+        var questionHandler = (Interfaces.IQuestionHandler)Activator.CreateInstance(Type.GetType(questionHandlerTypeName));
+
+        answerHandler.Context = ctx;
+        questionHandler.Context = ctx;
+        ctx.AnswerHandler = answerHandler;
+        ctx.QuestionHandler = questionHandler;
+        ctx.Parameters = parameters;
+        return ctx;
     }
 
     /// <summary>
@@ -82,6 +113,15 @@ public class ChatContextConverter : JsonConverter<ChatContext>
         writer.WriteString(PROPCONTEXT, value.Context);
         writer.WriteString(PROPANSWERHANDLER, value.AnswerHandler.GetType().AssemblyQualifiedName);
         writer.WriteString(PROPQUESTIONHANDLER, value.QuestionHandler.GetType().AssemblyQualifiedName);
+        writer.WritePropertyName(PROPPARAMS);
+        writer.WriteStartArray();
+        foreach (var kv in value.Parameters)
+        {
+            writer.WriteStartObject();
+            writer.WriteString(kv.Key, kv.Value);
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
         writer.WriteEndObject();
     }
 }

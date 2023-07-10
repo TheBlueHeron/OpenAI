@@ -1,4 +1,5 @@
-﻿using BlueHeron.OpenAI.Interfaces;
+﻿using BlueHeron.OpenAI.Models;
+using BlueHeron.OpenAI.Interfaces;
 
 namespace BlueHeron.OpenAI;
 
@@ -7,6 +8,30 @@ namespace BlueHeron.OpenAI;
 /// </summary>
 public class DefaultQuestionHandler : IQuestionHandler
 {
+    #region Properties
+
+    /// <summary>
+    /// The <see cref="ChatContext"/> to use.
+    /// </summary>
+    public ChatContext Context { get; set; }
+
+    #endregion
+
+    #region Construction
+
+    /// <summary>
+    /// Needed in deserialization.
+    /// </summary>
+    public DefaultQuestionHandler() { }
+
+    /// <summary>
+    /// Creates a new <see cref="DefaultQuestionHandler"/>, using the given <see cref="ChatContext"/>.
+    /// </summary>
+    /// <param name="context">The <see cref="ChatContext"/> to use</param>
+    public DefaultQuestionHandler(ChatContext context) { Context = context; }
+
+    #endregion
+
     /// <summary>
     /// No transformation is applied.
     /// </summary>

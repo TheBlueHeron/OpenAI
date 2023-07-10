@@ -7,28 +7,24 @@ namespace BlueHeron.OpenAI.Interfaces;
 /// </summary>
 public interface IQuestionHandler
 {
-    #region Objects and variables
-
-    /// <summary>
-    /// The <see cref="DefaultQuestionHandler"/>.
-    /// </summary>
-    private static readonly IQuestionHandler mDefault = new DefaultQuestionHandler();
-
-    #endregion
-
     #region Properties
 
     /// <summary>
-    /// Returns the <see cref="DefaultQuestionHandler"/>.
+    /// The <see cref="ChatContext"/> to use.
     /// </summary>
-    public static IQuestionHandler Default => mDefault;
+    public ChatContext Context { get; set; }
+
+    /// <summary>
+    /// Returns the <see cref="DefaultQuestionHandler"/> for the given <see cref="ChatContext"/>.
+    /// </summary>
+    public static IQuestionHandler Default(ChatContext context) => new DefaultQuestionHandler(context);
 
     #endregion
 
     #region Public methods and functions
 
     /// <summary>
-    /// Transforms the given user input into a prompt that is tailored to the current <see cref="ChatContext"/>.
+    /// Transforms the given user input into a prompt that is tailored to the configured <see cref="Context"/>.
     /// </summary>
     /// <param name="userInput">The user input</param>
     /// <returns>The prompt that will be posted to the OpenAI API</returns>

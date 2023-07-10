@@ -7,32 +7,29 @@ namespace BlueHeron.OpenAI.Interfaces;
 /// </summary>
 public interface IAnswerHandler
 {
-    #region Objects and variables
-
-    /// <summary>
-    /// The <see cref="DefaultAnswerHandler"/>.
-    /// </summary>
-    private static readonly IAnswerHandler mDefault = new DefaultAnswerHandler();
-
-    #endregion
-
     #region Properties
 
     /// <summary>
-    /// Returns the <see cref="DefaultAnswerHandler"/>.
+    /// The <see cref="ChatContext"/> to use.
     /// </summary>
-    public static IAnswerHandler Default => mDefault;
+    public ChatContext Context { get; set; }
+
+    /// <summary>
+    /// Returns the <see cref="DefaultAnswerHandler"/> for the given <see cref="ChatContext"/>.
+    /// </summary>
+    public static IAnswerHandler Default(ChatContext context) => new DefaultAnswerHandler(context);
 
     #endregion
 
     #region Public methods and functions
 
     /// <summary>
-    /// Transforms the given answer sequence into a sequence that is tailored to the current <see cref="ChatContext"/>.
+    /// Transforms the given answer sequence into a sequence that is tailored to the configured <see cref="Context"/>.
     /// </summary>
     /// <param name="answer">The answer returned from the OpenAI API</param>
+    /// <param name="actualResponse">The OpenAI API output as a string. Leave empty to use the transformed content as actual content.</param>
     /// <returns>The sequence that will be returned to the user</returns>
-    public IAsyncEnumerable<string> Transform(IAsyncEnumerable<string> answer);
+    public IAsyncEnumerable<string> Transform(IAsyncEnumerable<string> answer, out string actualResponse);
 
     #endregion
 }

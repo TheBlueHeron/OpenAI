@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel;
+using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using OpenAI.Chat;
 
@@ -34,6 +35,13 @@ public partial class ChatMessage : ObservableObject
     /// </summary>
     [ObservableProperty]
     private bool _isSpoken;
+
+    /// <summary>
+    /// Gets or sets a boolean, determining whether this message is currently being updated.
+    /// </summary>
+    [ObservableProperty]
+    [property: JsonIgnore]
+    private bool _isUpdating;
 
     /// <summary>
     /// The <see cref="OpenAI.ChatMessageType"/> of the message.
@@ -77,8 +85,7 @@ public partial class ChatMessage : ObservableObject
         _actualContent = actualContent;
         _displayedContent = displayedContent;
         _messageType = messageType;
-        _timeStampUTC = timeStampUTC;
-        _timeStamp = _timeStampUTC.ToLocalTime();
+        TimeStampUTC = timeStampUTC; // induce OnPropertyChanged call to set TimeStamp to local time
         _isSpoken = isSpoken;
         _sentences = new List<string>();
     }
@@ -106,6 +113,23 @@ public partial class ChatMessage : ObservableObject
     public override string ToString()
     {
         return $"{TimeStampUTC} - {MessageType} - {DisplayedContent}";
+    }
+
+    #endregion
+
+    #region Private methods and functions
+
+    /// <summary>
+    /// Sets <see cref="TimeStamp"/> to local time when <see cref="TimeStampUTC"/> has changed.
+    /// </summary>
+    /// <param name="e">The <see cref="PropertyChangedEventArgs"/></param>
+    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+    {
+        base.OnPropertyChanged(e);
+        if (e.PropertyName == nameof(TimeStampUTC))
+        {
+            TimeStamp = TimeStampUTC.ToLocalTime();
+        }
     }
 
     #endregion
