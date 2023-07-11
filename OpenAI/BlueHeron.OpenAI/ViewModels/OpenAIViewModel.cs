@@ -112,7 +112,7 @@ public partial class OpenAIViewModel : ObservableObject
         }
         _chats ??= new()
         {
-            new Chat(ChatContext.Default) { IsActive = true, Title = Chat.DefaultName() }
+            new Chat(ChatContext.Default) { IsActive = true }
         };
         ActiveChat = _chats.First(c => c.IsActive);
         mConnector = connector;
@@ -166,10 +166,11 @@ public partial class OpenAIViewModel : ObservableObject
     /// <summary>
     /// The 'AddChat' command, that adds a new chat to the <see cref="Chats"/> collection and activates it.
     /// </summary>
+    /// <param name="context">The <see cref="ChatContext"/> to use</param>
     [RelayCommand]
-    private void AddChat()
+    private void AddChat(ChatContext context)
     {
-        var newChat = new Chat(ChatContext.Default) { IsActive = true, Title = Chat.DefaultName() };
+        var newChat = new Chat(context) { IsActive = true };
         Chats.Add(newChat);
         ActivateChat(newChat);
     }
@@ -226,7 +227,7 @@ public partial class OpenAIViewModel : ObservableObject
         Chats.Remove(ActiveChat);
         if (!Chats.Any())
         {
-            var newChat = new Chat(ChatContext.Default) { IsActive = true, Title = Chat.DefaultName() };
+            var newChat = new Chat(ChatContext.Default) { IsActive = true };
             Chats.Add(newChat);
         }        
         ActivateChat(Chats.First());
@@ -314,8 +315,7 @@ public partial class OpenAIViewModel : ObservableObject
             isFirst = true;
         });
 
-        Answer = new ChatMessage(string.Empty, string.Empty, ChatMessageType.Answer, DateTime.UtcNow, isSpoken);
-        Answer.IsUpdating = true;
+        Answer = new(string.Empty, string.Empty, ChatMessageType.Answer, DateTime.UtcNow, isSpoken) { IsUpdating = true };
         ActiveChat.Messages.AddMessage(Answer);
 
         await foreach (var t in ActiveChat.Context.AnswerHandler.Transform(response, out actualContent))

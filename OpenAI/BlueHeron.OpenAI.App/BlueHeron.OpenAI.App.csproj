@@ -3,33 +3,20 @@
     <PropertyGroup>
         <TargetFrameworks>net8.0;net8.0-ios;net8.0-android;net8.0-maccatalyst;net8.0-windows10.0.19041.0</TargetFrameworks>
         <OutputType Condition="'$(TargetFramework)' != 'net8.0'">Exe</OutputType>
-
-        <!-- .NET MAUI -->
         <UseMaui>true</UseMaui>
         <SingleProject>true</SingleProject>
-
-        <!-- Project Options -->
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>BlueHeron.OpenAI</RootNamespace>
-
-        <!-- Display name -->
         <ApplicationTitle>BlueHeron.OpenAI</ApplicationTitle>
-
-        <!-- App Identifier -->
         <ApplicationIdGuid>488b72a0-62a7-49d6-9735-5a3706d3cbd8</ApplicationIdGuid>
-
-        <!-- Versions -->
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <ApplicationVersion>1</ApplicationVersion>
-
-        <!-- Target Platform Options -->
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
-        <!-- Minimum Target OS Version for Windows Platform -->
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
         <DefaultLanguage>en-US</DefaultLanguage>
         <PackageCertificateThumbprint>F9E8C925B7988ED7EC18A379A9C1932034AFC749</PackageCertificateThumbprint>
@@ -38,7 +25,6 @@
         <PackageIcon>SmallTile.scale-200.png</PackageIcon>
         <PackageLicenseExpression> Unlicense</PackageLicenseExpression>
     </PropertyGroup>
-
     <ItemGroup>
         <!-- App Icon -->
         <MauiIcon Include="Resources\appicon.svg" ForegroundFile="Resources\appiconfg.svg" Color="#512BD4" />
@@ -51,7 +37,6 @@
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
-
     <ItemGroup>
         <None Remove="BlueHeron.OpenAI.App.code-workspace" />
         <None Remove="BlueHeron.OpenAI.code-workspace" />
@@ -90,7 +75,6 @@
         <None Remove="Resources\App\WideTile.scale-400.png" />
         <None Remove="Resources\Images\heron.png" />
     </ItemGroup>
-
     <ItemGroup>
       <Content Include="Resources\App\AppIcon.scale-100.png" />
       <Content Include="Resources\App\AppIcon.scale-200.png" />
@@ -126,7 +110,6 @@
       <Content Include="Resources\App\WideTile.scale-200.png" />
       <Content Include="Resources\App\WideTile.scale-400.png" />
     </ItemGroup>
-
     <ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
@@ -137,12 +120,19 @@
         <PackageReference Include="CommunityToolkit.Maui.MediaElement" Version="2.0.0" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
         <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.25387-preview" />
+		<PackageReference Include="Plugin.Maui.Popup" Version="1.0.4" />
     </ItemGroup>
-
     <ItemGroup>
       <ProjectReference Include="..\BlueHeron.OpenAI\BlueHeron.OpenAI.csproj" />
     </ItemGroup>
-
+    <ItemGroup>
+      <MauiXaml Update="Controls\DropDownButton.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+      <MauiXaml Update="Controls\PickerControlView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+    </ItemGroup>
     <ItemGroup>
       <None Update="SmallTile.scale-200.png">
         <Pack>True</Pack>

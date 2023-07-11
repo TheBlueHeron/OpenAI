@@ -47,6 +47,15 @@ public partial class MainPage : ContentPage
     #region Events
 
     /// <summary>
+    /// Creates a new <see cref="Chat"/>, using the selected <see cref="ChatContext"/>.
+    /// </summary>
+    /// <param name="sender">The selected <see cref="ChatContext"/></param>
+    private void BtnNewChat_ItemSelected(object sender, EventArgs e)
+    {
+        mViewModel.AddChatCommand.Execute((ChatContext)sender);
+    }
+
+    /// <summary>
     /// Displays an alert message if needed.
     /// </summary>
     private void OnAlertChanged(object? sender, PropertyChangedEventArgs e)
@@ -133,4 +142,5 @@ public partial class MainPage : ContentPage
     }
 
     #endregion
+
 }

@@ -53,6 +53,7 @@ public partial class Chat : ObservableObject
     public Chat(ChatContext context)
     {
         _context = context;
+        _title = $"{context.Name} - {DateTime.Now.ToString(fmtDateTime)}";
     }
 
     #endregion
@@ -68,12 +69,6 @@ public partial class Chat : ObservableObject
     {
         Messages.AddMessage(new ChatMessage(Context.QuestionHandler.Transform(question), question, ChatMessageType.Question, DateTime.UtcNow, isSpoken));
     }
-
-    /// <summary>
-    /// Returns a default name for a new <see cref="Chat"/>.
-    /// </summary>
-    /// <returns>A string like 'New chat - 2023-07-01 12:00'.</returns>
-    public static string DefaultName() => $"{ChatContext.Default.Name} - {DateTime.UtcNow.ToString(fmtDateTime)}";
 
     /// <summary>
     /// Returns this chat as an <see cref="IList{Message}"/>.
