@@ -36,7 +36,7 @@
 				<ctr:PopupButton.PopupView>
 					<!-- BindingContext must be explicitly set here -->
 					<ctr:OptionsView BindingContext="{Binding Source={x:Reference pageMain},Path=BindingContext}"
-									 Options="{x:Null}"
+									 Options="{Binding Options}"
 									 PopupHeightRequest="300">
 					</ctr:OptionsView>
 				</ctr:PopupButton.PopupView>

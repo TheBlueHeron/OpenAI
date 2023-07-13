@@ -1,4 +1,3 @@
-
 namespace BlueHeron.OpenAI.Controls;
 
 /// <summary>
@@ -9,17 +8,17 @@ public partial class OptionsView : PopupView
     #region Objects and variables
 
     /// <summary>
-    /// Bindable property for <see cref="Options"/> property.
+    /// Bindable property for the <see cref="Options"/> property.
     /// </summary>
-    public static readonly BindableProperty OptionsProperty = BindableProperty.Create(nameof(Options), typeof(object), typeof(OptionsView), null);
+    public static readonly BindableProperty OptionsProperty = BindableProperty.Create(nameof(Options), typeof(AppOptions), typeof(OptionsView), new AppOptions());
 
     /// <summary>
-    /// Bindable property for <see cref="PopupHeightRequest"/> property.
+    /// Bindable property for the <see cref="PopupHeightRequest"/> property.
     /// </summary>
-    public static readonly BindableProperty PopupHeightRequestProperty = BindableProperty.Create(nameof(PopupHeightRequest), typeof(double), typeof(ItemSelectionView), 400.0);
+    public static readonly BindableProperty PopupHeightRequestProperty = BindableProperty.Create(nameof(PopupHeightRequest), typeof(double), typeof(ItemSelectionView), 460.0);
 
     /// <summary>
-    /// Bindable property for <see cref="PopupTitle"/> property.
+    /// Bindable property for the <see cref="PopupTitle"/> property.
     /// </summary>
     public static readonly BindableProperty PopupTitleProperty = BindableProperty.Create(nameof(PopupTitle), typeof(string), typeof(ItemSelectionView), "Edit options");
 
@@ -28,11 +27,11 @@ public partial class OptionsView : PopupView
     #region Properties
 
     /// <summary>
-    /// The <see cref="Options"/> to edit.
+    /// The <see cref="AppOptions"/> to edit.
     /// </summary>
-    public object Options
+    public AppOptions Options
     {
-        get => (object)GetValue(OptionsProperty);
+        get => (AppOptions)GetValue(OptionsProperty);
         set => SetValue(OptionsProperty, value);
     }
 

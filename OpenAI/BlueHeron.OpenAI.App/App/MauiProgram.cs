@@ -27,7 +27,6 @@ public static partial class MauiProgram
                    fonts.AddFont("OpenSans-SemiBold.ttf", "OpenSansSemiBold");
                    fonts.AddFont("Segoe.ttf", "Segoe MDL2 Assets");
                });
-
         builder.Services.AddSingleton<MainPage>();
 
 #if DEBUG

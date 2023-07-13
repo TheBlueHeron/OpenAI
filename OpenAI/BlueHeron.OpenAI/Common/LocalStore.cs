@@ -24,7 +24,7 @@ public static class LocalStore
     /// Returns an object of type <typeparamref name="T"/> loaded from the given file.
     /// </summary>
     /// <typeparam name="T">The type of the object to load, which must implement <see cref="IJsonSerializable"/></typeparam>
-    /// <param name="path">The name of the file, without extension</param>
+    /// <param name="fileName">The name of the file, without extension</param>
     /// <returns>An object of type <typeparamref name="T"/></returns>
     public static T Load<T>(string fileName) where T : IJsonSerializable, new()
     {
@@ -44,7 +44,7 @@ public static class LocalStore
     /// Saves the given object  of type <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">The type of the object to save, which must implement <see cref="IJsonSerializable"/></typeparam>
-    /// <param name="path">The name of the file, without extension</param>
+    /// <param name="fileName">The name of the file, without extension</param>
     /// <param name="data">The object of type <typeparamref name="T"/> to save</param>
     public static void Save<T>(string fileName, T data) where T : IJsonSerializable
     {

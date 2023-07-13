@@ -139,7 +139,7 @@ public partial class MainPage : ContentPage
         var rst = e.Result;
         if (rst != null)
         {
-            // save settings
+            LocalStore.Save(nameof(mViewModel.Options), mViewModel.Options);
         }
     }
 

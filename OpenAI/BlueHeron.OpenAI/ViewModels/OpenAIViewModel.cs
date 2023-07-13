@@ -77,6 +77,9 @@ public partial class OpenAIViewModel : ObservableObject
     [ObservableProperty()]
     private bool _isReadyToListen = true;
 
+    [ObservableProperty()]
+    private AppOptions _options;
+
     /// <summary>
     /// The latest question posted to the <see cref="OpenAIService"/>.
     /// </summary>
@@ -101,10 +104,9 @@ public partial class OpenAIViewModel : ObservableObject
     public OpenAIViewModel(OpenAIService connector, ISpeechToText speech)
     {
         _chats = LocalStore.Load<ChatCollection>(nameof(Chats));
-        _chats ??= new()
-        {
-            new Chat(ChatContext.Default) { IsActive = true }
-        };
+        _chats ??= new() { new Chat(ChatContext.Default) { IsActive = true } };
+        _options = LocalStore.Load<AppOptions>(nameof(Options));
+        _options ??= new();
         ActiveChat = _chats.First(c => c.IsActive);
         mConnector = connector;
         mSpeech = speech;
@@ -159,6 +161,7 @@ public partial class OpenAIViewModel : ObservableObject
     {
         mTokenSource?.Dispose();
         LocalStore.Save(nameof(Chats), Chats);
+        LocalStore.Save(nameof(Options), Options);
 
         return mSpeech is null || await mSpeech.Quit();
     }
