@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using BlueHeron.OpenAI.Controls;
 using BlueHeron.OpenAI.Models;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
@@ -35,9 +36,9 @@ public partial class MainPage : ContentPage
     /// <param name="viewModel">The <see cref="OpenAIViewModel"/> to use</param>
     public MainPage(OpenAIViewModel viewModel)
     {
-        InitializeComponent();
         mViewModel = viewModel;
         BindingContext = mViewModel;
+        InitializeComponent(); // above lines must come first as the ViewModel is needed for data bindings in this line
         mViewModel.PropertyChanged += OnAlertChanged;
         stack.SizeChanged += OnStackHeightChanged;
     }
@@ -45,15 +46,6 @@ public partial class MainPage : ContentPage
     #endregion
 
     #region Events
-
-    /// <summary>
-    /// Creates a new <see cref="Chat"/>, using the selected <see cref="ChatContext"/>.
-    /// </summary>
-    /// <param name="sender">The selected <see cref="ChatContext"/></param>
-    private void BtnNewChat_ItemSelected(object sender, EventArgs e)
-    {
-        mViewModel.AddChatCommand.Execute((ChatContext)sender);
-    }
 
     /// <summary>
     /// Displays an alert message if needed.
@@ -69,9 +61,10 @@ public partial class MainPage : ContentPage
     /// <summary>
     /// Sets focus to the Question <see cref="Entry"/>.
     /// </summary>
-    protected override void OnAppearing()
+    protected async override void OnAppearing()
     {
         base.OnAppearing();
+        await mViewModel.GetAvailableContextsAsync();
         Application.Current?.Dispatcher.DispatchDelayed(new TimeSpan(0, 0, 0, 0, 500), () =>
         {
             if (DeviceInfo.Platform == DevicePlatform.WinUI)
@@ -118,6 +111,19 @@ public partial class MainPage : ContentPage
     }
 
     /// <summary>
+    /// Creates a new <see cref="Chat"/>, using the selected <see cref="ChatContext"/>.
+    /// </summary>
+    /// <param name="sender">The selected <see cref="ChatContext"/></param>
+    private void OnNewChatSelected(object sender, PopupCompletedEventArgs e)
+    {
+        var rst = e.Result;
+        if (rst != null)
+        {
+            mViewModel.AddChatCommand.Execute((ChatContext)rst);
+        }
+    }
+
+    /// <summary>
     /// Executes the <see cref="OpenAIViewModel.AnswerQuestionCommand"/>.
     /// </summary>
     private void OnQuestionCompleted(object sender, EventArgs e)
@@ -126,11 +132,15 @@ public partial class MainPage : ContentPage
     }
 
     /// <summary>
-    /// Display settings (TODO: page / popup?).
+    /// Handles settings changes.
     /// </summary>
-    private void OnSettingsClicked(object sender, EventArgs e)
+    private void OnSettingsChanged(object sender, PopupCompletedEventArgs e)
     {
-        //
+        var rst = e.Result;
+        if (rst != null)
+        {
+            // save settings
+        }
     }
 
     /// <summary>

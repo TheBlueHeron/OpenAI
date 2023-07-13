@@ -1,12 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using System.Text.Json;
+using BlueHeron.OpenAI.Interfaces;
 
 namespace BlueHeron.OpenAI.Models;
 
 /// <summary>
 /// An <see cref="ObservableCollection{Chat}"/> that is easily (de-)serializable from and to json.
 /// </summary>
-public class ChatCollection : ObservableCollection<Chat>
+public class ChatCollection : ObservableCollection<Chat>, IJsonSerializable
 {
     /// <summary>
     /// Deserializes the given json into a <see cref="ChatCollection"/>.

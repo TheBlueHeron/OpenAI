@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ctr:PopupView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+			   xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			   xmlns:ctr="clr-namespace:BlueHeron.OpenAI.Controls"
+			   x:Class="BlueHeron.OpenAI.Controls.ItemSelectionView"
+			   x:Name="popup"
+			   Margin="10"
+			   HorizontalOptions="Fill"
+			   VerticalOptions="Center">
+	<Grid x:Name="grv"
+		  Padding="8"
+		  RowDefinitions="Auto,*"
+		  ColumnDefinitions="*,Auto"
+		  HeightRequest="{Binding Source={x:Reference popup},Path=PopupHeightRequest}">
+		<Label x:Name="lblTitle"
+			   FontSize="18"
+			   FontAttributes="Bold"
+			   Text="{Binding Source={x:Reference popup},Path=PopupTitle}"/>
+		<Button Grid.Column="1"
+				Style="{StaticResource SecondaryAction}"
+				HorizontalOptions="Center"
+				VerticalOptions="Center"
+				HeightRequest="36"
+				WidthRequest="40"
+				SemanticProperties.Hint="Cancel selection"
+				Clicked="SelectionCanceled">
+			<Button.ImageSource>
+				<FontImageSource FontFamily="Segoe MDL2 Assets"
+								 Size="12"
+								 Color="White"
+								 Glyph="&#xE711;" />
+			</Button.ImageSource>
+		</Button>
+		<CollectionView x:Name="cvItems"
+						Grid.Row="1"
+						Grid.ColumnSpan="2"
+						ItemsSource="{Binding Source={x:Reference popup},Path=ItemsSource}"
+						ItemTemplate="{Binding Source={x:Reference popup},Path=ItemTemplate}"
+						VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"
+                        SelectionMode="Single"
+                        SelectionChanged="SelectionChanged">
+		</CollectionView>
+	</Grid>
+</ctr:PopupView>

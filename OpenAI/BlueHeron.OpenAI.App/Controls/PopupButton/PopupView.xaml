@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BlueHeron.OpenAI.Controls.PopupView"
+             x:Name="this">
+    <ContentPage.ControlTemplate>
+        <ControlTemplate>
+            <Grid BackgroundColor="Transparent">
+				<ContentPresenter VerticalOptions="{Binding Source={x:Reference this},Path=VerticalOptions}"
+								  HorizontalOptions="{Binding Source={x:Reference this},Path=HorizontalOptions}" 
+								  BackgroundColor="{Binding Source={x:Reference this},Path=ForegroundColor}"
+								  Margin="{Binding Source={x:Reference this},Path=Margin}"/>
+			</Grid>
+        </ControlTemplate>
+    </ContentPage.ControlTemplate>
+</ContentPage>

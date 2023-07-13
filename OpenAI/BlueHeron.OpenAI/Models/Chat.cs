@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Text.Json.Serialization;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using OpenAI.Chat;
 
 namespace BlueHeron.OpenAI.Models;

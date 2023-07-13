@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<ContentPage x:Class="BlueHeron.OpenAI.Views.MainPage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:d="http://schemas.microsoft.com/dotnet/2021/maui/design" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:ctrl="clr-namespace:BlueHeron.OpenAI.Controls"
-			 xmlns:vm="clr-namespace:BlueHeron.OpenAI.ViewModels;assembly=BlueHeron.OpenAI"
-			 xmlns:mdl="clr-namespace:BlueHeron.OpenAI.Models;assembly=BlueHeron.OpenAI"
-			 xmlns:ctr="clr-namespace:BlueHeron.OpenAI.Controls"
+<ContentPage x:Class="BlueHeron.OpenAI.Views.MainPage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:d="http://schemas.microsoft.com/dotnet/2021/maui/design" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="clr-namespace:BlueHeron.OpenAI.ViewModels;assembly=BlueHeron.OpenAI" xmlns:mdl="clr-namespace:BlueHeron.OpenAI.Models;assembly=BlueHeron.OpenAI" xmlns:ctr="clr-namespace:BlueHeron.OpenAI.Controls"
+			 x:Name="pageMain"
 			 x:DataType="vm:OpenAIViewModel">
 	<NavigationPage.HasNavigationBar>
 		<x:Boolean>true</x:Boolean>
@@ -20,20 +19,28 @@
 			<Label Text="OpenAI Playground" 
 				   VerticalOptions="Center"
 				   FontSize="Title" />
-			<Button x:Name="btnSettings"
-					Grid.Column="1"
-					BorderWidth="0"
-					BackgroundColor="Transparent"
-					HorizontalOptions="Center"
-					VerticalOptions="Center"
-					Clicked="OnSettingsClicked">
+			<ctr:PopupButton x:Name="btnSettings"
+							 Grid.Column="1"
+							 BorderWidth="0"
+							 BackgroundColor="Transparent"
+							 HorizontalOptions="Center"
+							 VerticalOptions="Center"
+							 SemanticProperties.Hint="Add a new chat to the collection."
+							 PopupCompleted="OnSettingsChanged">
 				<Button.ImageSource>
 					<FontImageSource FontFamily="Segoe MDL2 Assets"
 									 Size="16"
 									 Color="Black"
 									 Glyph="&#xE713;" />
 				</Button.ImageSource>
-			</Button>
+				<ctr:PopupButton.PopupView>
+					<!-- BindingContext must be explicitly set here -->
+					<ctr:OptionsView BindingContext="{Binding Source={x:Reference pageMain},Path=BindingContext}"
+									 Options="{x:Null}"
+									 PopupHeightRequest="300">
+					</ctr:OptionsView>
+				</ctr:PopupButton.PopupView>
+			</ctr:PopupButton>
 		</Grid>
 	</NavigationPage.TitleView>
 	<ContentPage.Resources>
@@ -196,10 +203,10 @@
 				</Border>
 			</Grid>
 		</DataTemplate>
-		<ctrl:ChatMessageTemplateSelector x:Key="ChatMessageTemplateSelector"
-										  AnswerTemplate="{StaticResource AnswerTemplate}"
-										  QuestionTemplate="{StaticResource QuestionTemplate}"
-										  SystemTemplate="{StaticResource SystemTemplate}"/>
+		<ctr:ChatMessageTemplateSelector x:Key="ChatMessageTemplateSelector"
+										 AnswerTemplate="{StaticResource AnswerTemplate}"
+										 QuestionTemplate="{StaticResource QuestionTemplate}"
+										 SystemTemplate="{StaticResource SystemTemplate}"/>
 	</ContentPage.Resources>
 	<Grid x:Name="grdMain"
 		  RowDefinitions="Auto,*,Auto,Auto"
@@ -232,24 +239,34 @@
 			</Button>
 			<ctr:PopupButton x:Name="btnNewChat"
 							 Grid.Column="2"	
-							 ItemSource="{Binding AvailableContexts, Mode=OneWay}"
-							 PickerHeightRequest="200"
-							 ItemSelected="BtnNewChat_ItemSelected"
 							 VerticalOptions="Center"
 							 Margin="2,0,0,0"
 							 HeightRequest="36"
 							 WidthRequest="40"
 							 SemanticProperties.Hint="Add a new chat to the collection."
 							 Style="{StaticResource PrimaryAction}"
-							 PopupTitle="Select a Context"
-							 Glyph="&#xE710;">
-				<ctr:PopupButton.ItemTemplate>
-					<DataTemplate x:DataType="mdl:ChatContext">
-						<Label Padding="5"
-							   FontSize="Small"
-							   Text="{Binding Name}"/>
-					</DataTemplate>
-				</ctr:PopupButton.ItemTemplate>
+							 PopupCompleted="OnNewChatSelected">
+				<Button.ImageSource>
+					<FontImageSource FontFamily="Segoe MDL2 Assets"
+									 Size="12"
+									 Color="White"
+									 Glyph="&#xE710;" />
+				</Button.ImageSource>
+				<ctr:PopupButton.PopupView>
+					<!-- BindingContext must be explicitly set here -->
+					<ctr:ItemSelectionView BindingContext="{Binding Source={x:Reference pageMain},Path=BindingContext}"
+										   ItemsSource="{Binding AvailableContexts}"
+										   PopupHeightRequest="300"
+										   PopupTitle="Select Context">
+						<ctr:ItemSelectionView.ItemTemplate>
+							<DataTemplate x:DataType="mdl:ChatContext">
+								<Label Padding="5"
+									   FontSize="Small"
+									   Text="{Binding Name}"/>
+							</DataTemplate>
+						</ctr:ItemSelectionView.ItemTemplate>
+					</ctr:ItemSelectionView>
+				</ctr:PopupButton.PopupView>
 			</ctr:PopupButton>
 		</Grid>
 		<Border x:Name="brdChat"

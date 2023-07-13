@@ -3,14 +3,67 @@ using System.IO.Compression;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using BlueHeron.OpenAI.Interfaces;
 
 namespace BlueHeron.OpenAI;
 
 /// <summary>
-/// Compresses and decompresses strings using ZLib (see <see cref="ZLibStream"/>).
+/// Object that handles secure local persistence of data.
 /// </summary>
-public sealed class Compressor
+public static class LocalStore
 {
+    #region Objects and variables
+
+    private const string fmtFile = "{0}.dat";
+
+    #endregion
+
+    #region IO
+
+    /// <summary>
+    /// Returns an object of type <typeparamref name="T"/> loaded from the given file.
+    /// </summary>
+    /// <typeparam name="T">The type of the object to load, which must implement <see cref="IJsonSerializable"/></typeparam>
+    /// <param name="path">The name of the file, without extension</param>
+    /// <returns>An object of type <typeparamref name="T"/></returns>
+    public static T Load<T>(string fileName) where T : IJsonSerializable, new()
+    {
+        var path = CreatePath(fileName);
+        if (File.Exists(path))
+        {
+            try
+            {
+                return IJsonSerializable.FromJson<T>(Decrypt(Decompress(File.ReadAllBytes(path))));
+            }
+            catch { } // ignore
+        }
+        return default;
+    }
+
+    /// <summary>
+    /// Saves the given object  of type <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the object to save, which must implement <see cref="IJsonSerializable"/></typeparam>
+    /// <param name="path">The name of the file, without extension</param>
+    /// <param name="data">The object of type <typeparamref name="T"/> to save</param>
+    public static void Save<T>(string fileName, T data) where T : IJsonSerializable
+    {
+        try
+        {
+            File.WriteAllBytes(CreatePath(fileName), Compress(Encrypt(data.ToJson())));
+        }
+        catch { } // ignore
+    }
+
+    /// <summary>
+    /// Returns the full path to the file with the given name.
+    /// </summary>
+    /// <param name="fileName">The name of the file, without extension</param>
+    /// <returns>The full path to the file</returns>
+    private static string CreatePath(string fileName) => Path.Combine(FileSystem.Current.AppDataDirectory, string.Format(fmtFile, fileName));
+
+    #endregion
+
     #region ZLib
 
     /// <summary>

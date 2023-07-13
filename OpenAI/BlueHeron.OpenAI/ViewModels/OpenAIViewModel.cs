@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using BlueHeron.OpenAI.Interfaces;
 using BlueHeron.OpenAI.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,7 +14,6 @@ public partial class OpenAIViewModel : ObservableObject
     #region Objects and variables
 
     private const int _ANSWERUPDATEDELAY = 25; // enhance the effect of 'live writing' of the answer
-    private const string _CHATSFILE = "chats.dat";
     private const string _DEFAULTCULTURE = "en-us";
     private const string _DOT = ".";
     private const string _MIC = "No microphone access!";
@@ -100,16 +100,7 @@ public partial class OpenAIViewModel : ObservableObject
     /// <param name="speech">The <see cref="ISpeechToText"/> to use</param>
     public OpenAIViewModel(OpenAIService connector, ISpeechToText speech)
     {
-        var path = Path.Combine(FileSystem.Current.AppDataDirectory, _CHATSFILE);
-
-        if (File.Exists(path))
-        {
-            try
-            {
-                _chats = ChatCollection.FromJson(Compressor.Decrypt(Compressor.Decompress(File.ReadAllBytes(path))));
-            }
-            catch { } // ignore
-        }
+        _chats = LocalStore.Load<ChatCollection>(nameof(Chats));
         _chats ??= new()
         {
             new Chat(ChatContext.Default) { IsActive = true }
@@ -145,16 +136,29 @@ public partial class OpenAIViewModel : ObservableObject
     }
 
     /// <summary>
+    /// Gets the available <see cref="ChatContext"/>s for the current user.
+    /// </summary>
+    /// <returns>A <see cref="Task"/></returns>
+    public async Task GetAvailableContextsAsync() // TODO: asynchronously retrieve available contexts from server
+    {
+        await Task.Run(() => {
+            AvailableContexts.Clear();
+            AvailableContexts.Add(ChatContext.Default);
+
+            var ctx = new ChatContext("BIS", "Insert instructions for BIS data here...");
+            ctx.QuestionHandler = IQuestionHandler.Default(ctx);
+            ctx.AnswerHandler = IAnswerHandler.Default(ctx);
+            AvailableContexts.Add(ctx);
+        });
+    }
+
+    /// <summary>
     /// Stores the <see cref="Chats"/> and cleans up resources.
     /// </summary>
     public async Task<bool> Quit()
     {
         mTokenSource?.Dispose();
-        try
-        {
-            File.WriteAllBytes(Path.Combine(FileSystem.Current.AppDataDirectory, _CHATSFILE), Compressor.Compress(Compressor.Encrypt(Chats.ToJson())));
-        }
-        catch { } // ignore
+        LocalStore.Save(nameof(Chats), Chats);
 
         return mSpeech is null || await mSpeech.Quit();
     }
@@ -180,7 +184,7 @@ public partial class OpenAIViewModel : ObservableObject
     /// </summary>
     /// <param name="isSpoken">The question was raised through speech</param>
     [RelayCommand]
-    private async void AnswerQuestion(bool isSpoken)
+    private async Task AnswerQuestion(bool isSpoken)
     {
         if (ActiveChat.Messages.Count == 0)
         {
@@ -237,7 +241,7 @@ public partial class OpenAIViewModel : ObservableObject
     /// Starts listening for speech input and generates the <see cref="Question"/> from it.
     /// </summary>
     [RelayCommand]
-    private async void Listen()
+    private async Task Listen()
     {
         var isAuthorized = await mSpeech.RequestPermissions();
 

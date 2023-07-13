@@ -1,6 +1,4 @@
-﻿using BlueHeron.OpenAI.Interfaces;
-
-namespace BlueHeron.OpenAI.Models;
+﻿namespace BlueHeron.OpenAI.Models;
 
 /// <summary>
 /// A <see cref="List{ChatContext}"/> that always contains a <see cref="ChatContext.Default"/>.
@@ -12,16 +10,7 @@ public class ChatContextCollection : List<ChatContext>
     /// <summary>
     /// Creates a new <see cref="ChatContextCollection"/>.
     /// </summary>
-    public ChatContextCollection()
-    {
-        Add(ChatContext.Default);
-
-        // TODO: retrieve available contexts from server
-        var ctx = new ChatContext("BIS", "Insert instructions for BIS data here...");
-        ctx.QuestionHandler = IQuestionHandler.Default(ctx);
-        ctx.AnswerHandler = IAnswerHandler.Default(ctx);
-        Add(ctx);
-    }
+    public ChatContextCollection() { }
 
     #endregion
 

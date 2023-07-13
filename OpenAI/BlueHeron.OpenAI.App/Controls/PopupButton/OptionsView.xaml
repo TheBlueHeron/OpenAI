@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ctr:PopupView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+						 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+						 xmlns:ctr="clr-namespace:BlueHeron.OpenAI.Controls"
+						 x:Class="BlueHeron.OpenAI.Controls.OptionsView"
+						 x:Name="popup"
+						 Margin="10"
+						 HorizontalOptions="Fill"
+						 VerticalOptions="Center">
+	<Grid x:Name="grv"
+		  Padding="8"
+		  RowDefinitions="Auto,*"
+		  ColumnDefinitions="*,Auto,Auto"
+		  HeightRequest="{Binding Source={x:Reference popup},Path=PopupHeightRequest}">
+		<Label x:Name="lblTitle"
+			   FontSize="18"
+			   FontAttributes="Bold"
+			   Text="{Binding Source={x:Reference popup},Path=PopupTitle}"/>
+		<Button Grid.Column="1"
+				Style="{StaticResource SecondaryAction}"
+				HorizontalOptions="Center"
+				VerticalOptions="Center"
+				HeightRequest="36"
+				WidthRequest="40"
+				SemanticProperties.Hint="Cancel editing"
+				Clicked="EditCanceled">
+			<Button.ImageSource>
+				<FontImageSource FontFamily="Segoe MDL2 Assets"
+								 Size="12"
+								 Color="White"
+								 Glyph="&#xE711;" />
+			</Button.ImageSource>
+		</Button>
+		<Button Grid.Column="2"
+				Style="{StaticResource PrimaryAction}"
+				HorizontalOptions="Center"
+				VerticalOptions="Center"
+				HeightRequest="36"
+				WidthRequest="40"
+				SemanticProperties.Hint="Save options"
+				Clicked="EditCompleted">
+			<Button.ImageSource>
+				<FontImageSource FontFamily="Segoe MDL2 Assets"
+								 Size="12"
+								 Color="White"
+								 Glyph="&#xE73E;" />
+			</Button.ImageSource>
+		</Button>
+		<Label Grid.Row="1" Grid.ColumnSpan="3" Text="OPTIONS HERE..." />
+	</Grid>
+</ctr:PopupView>

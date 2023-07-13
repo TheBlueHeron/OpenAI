@@ -22,7 +22,7 @@
 	  </Content>
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.25387-preview" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0-preview.5.23280.8" />
 		<PackageReference Include="System.Speech" Version="8.0.0-preview.5.23280.8" />
